@@ -13,7 +13,7 @@ alwaysApply: false
 - Code blocks: 5-10 lines max with the key line visually distinct. Longer code belongs in a live demo, not a slide.
 - Prefer diagrams, comparisons, and decision matrices over bullet lists. If a slide has more than 4 bullets, restructure it.
 - Use `#pause` for progressive disclosure: reveal one point at a time on comparison tables, step-by-step algorithms, and "predict then reveal" sequences.
-- Use `#focus-slide[...]` for the opening question of each session and for key "one sentence to remember" moments.
+- Use `#hero[...]` (defined in `style.typ`) for centered, large-text emphasis — opening questions, key takeaways, "one sentence to remember" moments. Import it with `#import "../../style.typ": hero`.
 
 ## Rhythm
 
@@ -32,3 +32,4 @@ alwaysApply: false
 - Keep the progress bar enabled (default).
 - Session title in `config-info.title`, day identifier in `config-info.institution` (used as footer).
 - Level-2 headings (`==`) create content slides. Do not use level-1 headings (`=`) within a session file — those create section dividers and belong only if the session has distinct multi-topic arcs.
+- The second slide of every deck is an auto-generated QR code linking to the GitHub Pages PDF. This is handled by `style.typ` via the `slug` parameter — no manual action needed.

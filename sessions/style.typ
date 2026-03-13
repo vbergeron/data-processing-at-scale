@@ -4,6 +4,10 @@
 
 #let base-url = "https://vbergeron.github.io/data-processing-at-scale/"
 
+#let hero(body) = {
+  align(center + horizon, text(size: 28pt, body))
+}
+
 #let dpas-theme(title: [], day: [], slug: "", body) = {
   show: metropolis-theme.with(
     aspect-ratio: "16-9",

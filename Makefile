@@ -23,8 +23,11 @@ build:
 	mkdir -p build
 
 # Rebuild on any .typ file change (requires entr)
+# -d: restart when files are added/removed
+# -s: run via shell so make -k works
+# make -k: keep going past errors
 watch:
-	find sessions -name '*.typ' | entr make
+	while true; do find sessions -name '*.typ' | entr -d -s 'make -k'; done
 
 # Remove all built artifacts
 clean:
