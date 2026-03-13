@@ -1,0 +1,72 @@
+#import "../style.typ": *
+
+#show: lab-theme.with(
+  title: [Demo 2.1 — Comparing Query Performance Across File Formats and Partitioning Schemes],
+  session: [Session 2.1 — Storage Formats & Distributed File Systems],
+  format: [Instructor-led hands-on demo],
+  tools: [Python, PyArrow, DuckDB, `parquet-tools`],
+)
+
+= Objective
+
+Demonstrate the concrete performance differences between row-oriented and columnar file formats. Show how partitioning and predicate pushdown interact with storage layout.
+
+= Setup
+
+- A ~10M row dataset (e.g., NYC taxi trips or synthetic event logs)
+- Same data written in multiple formats: CSV, JSON (line-delimited), Avro, Parquet (snappy), Parquet (zstd), ORC
+- Partitioned vs unpartitioned Parquet variants (partitioned by date)
+- DuckDB for querying, PyArrow for introspection
+
+= Walkthrough
+
+== Step 1 — File sizes
+
+List the files. Observe:
+- CSV: large, no compression, no schema
+- JSON: even larger, redundant keys
+- Avro: compact, row-oriented, schema embedded
+- Parquet: smallest, columnar, compressed
+- Show compression ratios — why columns compress better than rows
+
+== Step 2 — Introspecting Parquet
+
+Use `parquet-tools` / PyArrow to inspect a Parquet file:
+- Row groups, column chunks, page structure
+- Statistics per column chunk (min/max) — this enables predicate pushdown
+- Dictionary encoding on low-cardinality columns
+- Show the metadata footer
+
+== Step 3 — Full scan query
+
+Query: count all rows where `fare_amount > 50`
+- Run on CSV, Avro, Parquet — compare wall-clock times
+- CSV: must parse every byte of every row
+- Parquet: reads only the `fare_amount` column, skips row groups via min/max stats
+
+== Step 4 — Projection query
+
+Query: select only 2 columns out of 20
+- CSV/JSON: must read all columns, discard 18
+- Parquet: reads only the 2 requested column chunks
+- Show I/O bytes read (use DuckDB `EXPLAIN ANALYZE`)
+
+== Step 5 — Partitioned queries
+
+Query: filter on `pickup_date = '2023-06-15'`
+- Unpartitioned Parquet: full scan of all row groups
+- Partitioned Parquet: reads a single directory, skips everything else
+- Show the file tree structure of a Hive-style partitioned dataset
+
+== Step 6 — Schema evolution
+
+Add a new column to the Parquet schema:
+- Old files don't have it — reads return `NULL`
+- No rewrite needed — contrast with CSV where you'd need to re-export
+
+= Key Takeaways
+
+- Columnar formats (Parquet, ORC) dramatically reduce I/O for analytical queries
+- Predicate pushdown uses column statistics to skip entire row groups
+- Partitioning is file-system-level indexing — powerful but requires knowing your access patterns
+- Schema evolution is a first-class feature of Parquet and Avro — CSV has no concept of it

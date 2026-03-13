@@ -1,0 +1,56 @@
+#import "../style.typ": *
+
+#show: lab-theme.with(
+  title: [Demo 1.1 — Benchmarking a Single-Node Pipeline to its Breaking Point],
+  session: [Session 1.1 — Introduction & Motivation],
+  format: [Instructor-led hands-on demo],
+  tools: [Python, PostgreSQL, `htop`/`vmstat`],
+)
+
+= Objective
+
+Show students where single-machine processing breaks down by progressively scaling a data pipeline until CPU, memory, or I/O becomes the bottleneck. Builds the motivation for distributed processing.
+
+= Setup
+
+- A Python script that reads a CSV, applies transformations (filtering, aggregation, join), and writes results
+- The same workload expressed as SQL queries in PostgreSQL
+- Dataset: start with 100K rows, scale to 1M, 10M, 100M
+- System monitoring visible on a second screen (`htop`, `iostat`, or Grafana)
+
+= Walkthrough
+
+== Step 1 — Baseline (100K rows)
+
+Run the pipeline on a small dataset. Everything is fast. Observe:
+- CPU usage (single core)
+- Memory footprint
+- Wall-clock time
+
+== Step 2 — Scaling up (1M → 10M rows)
+
+Increase dataset size. Observe:
+- Linear vs superlinear slowdown
+- When does the dataset stop fitting in memory?
+- Swap pressure appearing on `htop`
+
+== Step 3 — The wall (100M rows)
+
+Push to 100M rows. Show:
+- OOM kills or excessive swap thrashing
+- Single-core bottleneck (Python GIL, single-threaded sort)
+- Disk I/O saturation on joins
+
+== Step 4 — Attempted fixes
+
+Demonstrate common single-node optimizations and their limits:
+- Chunked processing (`pandas` chunking, SQL cursors)
+- Columnar in-process engines (DuckDB) — how far can a single node actually go?
+- Indexing in PostgreSQL — helps reads, but the data still needs to fit
+
+= Key Takeaways
+
+- Single-node scaling hits hard physical limits (RAM, single-core CPU, disk bandwidth)
+- Some tools (DuckDB) push the boundary surprisingly far — the "distributed" threshold is higher than expected
+- Monitoring is essential to understand _which_ resource is the bottleneck
+- Motivates the need for horizontal scaling and distributed processing

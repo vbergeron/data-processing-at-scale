@@ -1,0 +1,57 @@
+#import "../style.typ": *
+
+#show: lab-theme.with(
+  title: [Demo 1.3 — Implementing Word-Count and Join in a MapReduce-Style Framework],
+  session: [Session 1.3 — Batch Processing: MapReduce & Beyond],
+  format: [Instructor-led hands-on demo],
+  tools: [Python (no external framework)],
+)
+
+= Objective
+
+Implement MapReduce from scratch in pure Python to demystify the programming model. Then show its limitations on multi-stage workloads, motivating the move to DAG-based engines.
+
+= Setup
+
+- A minimal MapReduce framework in ~50 lines of Python: `map()`, shuffle/sort, `reduce()`
+- Input: a text corpus (e.g., a few books from Project Gutenberg)
+- A second dataset for the join demo (e.g., orders + customers CSVs)
+
+= Walkthrough
+
+== Step 1 — The framework
+
+Live-code a minimal MapReduce engine:
+- `mapper(key, value) → [(key, value)]`
+- Shuffle: group by key, sort
+- `reducer(key, [values]) → [(key, value)]`
+- Run it with Python's `multiprocessing` to simulate workers
+
+== Step 2 — Word count
+
+Classic word-count:
+- Map: emit `(word, 1)` for each word
+- Reduce: sum the counts
+- Show intermediate shuffle data — this is where the cost is
+- Add a combiner — observe the reduction in shuffle data
+
+== Step 3 — Distributed join (reduce-side)
+
+Join orders with customers on `customer_id`:
+- Map: tag each record with its source table, emit `(customer_id, tagged_record)`
+- Reduce: match records from both tables
+- Show: the entire dataset must be shuffled — expensive
+
+== Step 4 — Iterative workload (PageRank sketch)
+
+Sketch a single PageRank iteration in MapReduce:
+- Show that each iteration requires a full read-shuffle-write cycle
+- Intermediate results go to disk between iterations
+- This is why MapReduce was replaced for iterative workloads (ML, graph)
+
+= Key Takeaways
+
+- MapReduce is simple but powerful: any computation can be expressed as map + shuffle + reduce
+- The shuffle is the dominant cost — combiners help but don't eliminate it
+- Joins are expensive: the entire dataset moves across the network
+- Iterative algorithms expose MapReduce's fundamental limitation: no in-memory state between stages
