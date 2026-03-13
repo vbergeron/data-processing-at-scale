@@ -17,8 +17,8 @@ LAB_STYLE     := labs/style.typ
 # Build everything
 all: $(SESSION_PDFS) $(LAB_PDFS)
 
-# Each session PDF depends on its main.typ, all its slides, and the shared style.
-build/%.pdf: sessions/%/main.typ sessions/%/slides/*.typ $(SESSION_STYLE) | build
+# Each session PDF depends on its main.typ, all its sections, and the shared style.
+build/%.pdf: sessions/%/main.typ sessions/%/sections/*.typ $(SESSION_STYLE) | build
 	typst compile --root . $< $@
 
 # Each lab PDF depends on its main.typ and the lab style.

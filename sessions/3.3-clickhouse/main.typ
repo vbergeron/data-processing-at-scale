@@ -1,10 +1,5 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [3.3 — ClickHouse: Real-Time Analytics at Scale], day: [Day 3], slug: "3.3-clickhouse")
+#show: dpas-theme.with(title: [3.3 — ClickHouse: Real-Time Analytics at Scale], day: [Day 3], slug: "3.3-clickhouse", lab: "3.3-lattice-pipeline")
 
-#include "slides/slide_001.typ"
-#include "slides/slide_002.typ"
-#include "slides/slide_003.typ"
-#include "slides/slide_004.typ"
-#include "slides/slide_005.typ"
-#include "slides/slide_006.typ"
+#include "sections/01-content.typ"

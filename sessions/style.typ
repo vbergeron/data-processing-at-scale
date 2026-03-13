@@ -8,7 +8,7 @@
   align(center + horizon, text(size: 28pt, body))
 }
 
-#let dpas-theme(title: [], day: [], slug: "", body) = {
+#let dpas-theme(title: [], day: [], slug: "", lab: "", body) = {
   show: metropolis-theme.with(
     aspect-ratio: "16-9",
     footer: self => self.info.institution,
@@ -38,4 +38,18 @@
   }
 
   body
+
+  if lab != "" {
+    let url = base-url + "lab-" + lab + ".pdf"
+    slide[
+      #align(center + horizon)[
+        #text(size: 24pt, weight: "bold")[Lab]
+        #v(1em)
+        #tiaoma.qrcode(url, width: 5cm)
+
+        #v(0.5em)
+        #text(size: 14pt, fill: luma(120))[#link(url)[#url]]
+      ]
+    ]
+  }
 }
