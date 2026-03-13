@@ -17,7 +17,7 @@
 - Vertical vs horizontal scaling
 - Overview of the modern data stack
 - Taxonomy: batch, micro-batch, streaming
-- **Demo:** [Benchmarking a single-node pipeline to its breaking point](labs/1.1-single-node-benchmark.md)
+- **Lab:** [Benchmarking a single-node pipeline to its breaking point](labs/1.1-single-node-benchmark/main.typ) — any language, SQLite, system monitor
 
 **1.2 — Distributed Systems Fundamentals**
 
@@ -26,7 +26,7 @@
 - Consistency models: strong, eventual, causal
 - Partitioning strategies: hash, range, consistent hashing
 - Replication: leader/follower, quorum-based
-- **Demo:** [Observing partition and replication behavior in a distributed KV store](labs/1.2-distributed-kv.md)
+- **Demo:** [Observing partition and replication behavior in a distributed KV store](labs/1.2-distributed-kv/main.typ)
 
 **1.3 — Batch Processing: MapReduce & Beyond**
 
@@ -35,14 +35,14 @@
 - Limitations of MapReduce (multi-stage, iterative workloads)
 - From Hadoop to modern engines
 - Data locality and fault tolerance
-- **Demo:** [Implementing word-count and join in a MapReduce-style framework](labs/1.3-mapreduce.md)
+- **Demo:** [Implementing word-count and join in a MapReduce-style framework](labs/1.3-mapreduce/main.typ)
 
 **1.4 — Data Modeling at Scale**
 
 - Why modeling changes at scale: cost of joins, denormalization trade-offs
 - Star schemas, wide tables, and pre-aggregation patterns
 - Normalization vs denormalization: when and why
-- **Demo:** [Designing a star schema and comparing join strategies in PostgreSQL](labs/1.4-star-schema.md)
+- **Demo:** [Designing a star schema and comparing join strategies in PostgreSQL](labs/1.4-star-schema/main.typ)
 
 **1.5 — Cost Modeling & Performance Reasoning**
 
@@ -68,7 +68,7 @@
 - File formats: Parquet, ORC, Avro — trade-offs and internals
 - Schema evolution and data serialization
 - Lakehouse table formats (Delta Lake, Iceberg, Hudi): metadata, time travel, partition pruning
-- **Demo:** [Comparing query performance across file formats and partitioning schemes](labs/2.1-file-formats.md)
+- **Demo:** [Comparing query performance across file formats and partitioning schemes](labs/2.1-file-formats/main.typ)
 
 **2.2 — Apache Spark & Query Execution Internals**
 
@@ -79,7 +79,7 @@
 - Tungsten: whole-stage code generation, off-heap memory management
 - DataFrames and the Spark SQL API
 - Partitioning, shuffles, and performance tuning
-- **Demo:** [Reading and optimizing Spark query plans on a multi-GB dataset](labs/2.2-spark-query-plans.md)
+- **Demo:** [Reading and optimizing Spark query plans on a multi-GB dataset](labs/2.2-spark-query-plans/main.typ)
 
 ---
 
@@ -95,7 +95,7 @@
 - DataStream API and Flink SQL
 - Event time vs processing time — assigning timestamps and watermarks
 - Flink's relationship to Kafka: sources, sinks, and exactly-once integration
-- **Demo:** [Building a Flink pipeline on a Kafka source](labs/3.1-flink-pipeline.md)
+- **Demo:** [Building a Flink pipeline on a Kafka source](labs/3.1-flink-pipeline/main.typ)
 
 **3.2 — Advanced Flink: Windows, State & Guarantees**
 
@@ -104,7 +104,7 @@
 - Stateful processing: keyed state, operator state, state backends (RocksDB)
 - Checkpointing and savepoints: exactly-once semantics end-to-end
 - Backpressure and flow control
-- **Demo:** [Implementing windowed aggregations with watermarks in Flink](labs/3.2-flink-windows.md)
+- **Demo:** [Implementing windowed aggregations with watermarks in Flink](labs/3.2-flink-windows/main.typ)
 
 **3.3 — ClickHouse: Real-Time Analytics at Scale**
 
@@ -113,7 +113,7 @@
 - MergeTree engine family: inserts, merges, and background compaction
 - Materialized views and projections for pre-aggregation
 - Sharding, replication, and distributed queries
-- **Demo:** [Modeling and querying a billion-row analytics dataset in ClickHouse](labs/3.4-clickhouse.md)
+- **Demo:** [Modeling and querying a billion-row analytics dataset in ClickHouse](labs/3.4-clickhouse/main.typ)
 
 **3.4 — Data Pipelines: Theory & Reasoning**
 
@@ -122,7 +122,7 @@
 - Lattice state machines and CRDTs: convergent distributed state
 - Idempotency and determinism as pipeline design principles
 - Connecting theory to practice: how Spark, Flink, ClickHouse, and Kafka map to these models
-- **Demo:** [Modeling a pipeline as a lattice](labs/3.3-lattice-pipeline.md)
+- **Demo:** [Modeling a pipeline as a lattice](labs/3.3-lattice-pipeline/main.typ)
 
 ---
 
@@ -138,7 +138,7 @@
 - Count-Min Sketch: frequency estimation in streaming contexts
 - t-digest: approximate percentiles on distributed data
 - Practical use in ClickHouse, Spark, and Flink
-- **Demo:** [Building HLL, Bloom filters, and CMS from scratch, then comparing against ClickHouse built-ins](labs/4.1-probabilistic-structures.md)
+- **Demo:** [Building HLL, Bloom filters, and CMS from scratch, then comparing against ClickHouse built-ins](labs/4.1-probabilistic-structures/main.typ)
 
 **4.2 — Differential Dataflow & Incremental Computation**
 
@@ -147,7 +147,7 @@
 - Partially ordered timestamps and iteration
 - Applications: materialized views, incremental ETL, live dashboards
 - Connection to lattices and CALM (callback to Day 3)
-- **Demo:** [Building an incremental computation engine that maintains views via deltas](labs/4.2-incremental-dataflow.md)
+- **Demo:** [Building an incremental computation engine that maintains views via deltas](labs/4.2-incremental-dataflow/main.typ)
 
 **4.3 — Project Briefing**
 

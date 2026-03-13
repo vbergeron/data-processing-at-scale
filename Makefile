@@ -8,6 +8,10 @@ SESSION_PDFS := $(patsubst sessions/%/,build/%.pdf,$(SESSIONS))
 LABS     := $(sort $(dir $(wildcard labs/*/main.typ)))
 LAB_PDFS := $(patsubst labs/%/,build/lab-%.pdf,$(LABS))
 
+# Discover labs that have an assets folder
+LAB_ASSETS   := $(sort $(dir $(wildcard labs/*/assets/)))
+LAB_ARCHIVES := $(patsubst labs/%/assets/,build/lab-%-assets.tar.gz,$(LAB_ASSETS))
+
 # Shared styles
 SESSION_STYLE := sessions/style.typ
 LAB_STYLE     := labs/style.typ
@@ -15,7 +19,7 @@ LAB_STYLE     := labs/style.typ
 .PHONY: all clean watch
 
 # Build everything
-all: $(SESSION_PDFS) $(LAB_PDFS) build/index.html
+all: $(SESSION_PDFS) $(LAB_PDFS) $(LAB_ARCHIVES) build/index.html
 
 # Each session PDF depends on its main.typ, all its sections, and the shared style.
 build/%.pdf: sessions/%/main.typ sessions/%/sections/*.typ $(SESSION_STYLE) | build
@@ -24,6 +28,10 @@ build/%.pdf: sessions/%/main.typ sessions/%/sections/*.typ $(SESSION_STYLE) | bu
 # Each lab PDF depends on its main.typ and the lab style.
 build/lab-%.pdf: labs/%/main.typ $(LAB_STYLE) | build
 	typst compile --root . $< $@
+
+# Lab asset archives
+build/lab-%-assets.tar.gz: labs/%/assets/* | build
+	tar -czf $@ -C labs/$*/assets .
 
 # Landing page
 build/index.html: index.html | build
