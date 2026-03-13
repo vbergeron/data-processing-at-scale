@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Processing at Scale</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coral: { DEFAULT: '#E06C75', light: '#e8a5ab' },
+            anthracite: '#2d2d2d',
+            paper: '#faf8f5',
+          },
+          fontFamily: {
+            serif: ['"New Computer Modern"', '"Computer Modern Serif"', 'Georgia', 'serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/fonts.css');
+  </style>
+</head>
+<body class="bg-paper text-anthracite font-serif antialiased">
+
+  <div class="max-w-3xl mx-auto px-6 py-16">
+
+    <!-- Header -->
+    <header class="mb-16 text-center">
+      <h1 class="text-4xl font-bold tracking-tight mb-2">Data Processing at Scale</h1>
+      <p class="text-lg text-gray-500">Master 2 — 14 sessions, 21 hours</p>
+    </header>
+
+    <!-- Sessions -->
+    <section class="mb-14">
+      <h2 class="text-2xl font-bold border-b-2 border-coral pb-1 mb-6">Sessions</h2>
+
+      <h3 class="text-sm font-bold uppercase tracking-widest text-coral mb-3">Day 1 — Foundations & Data Modeling</h3>
+      <ul class="mb-6 space-y-1">
+        <li class="flex justify-between items-baseline">
+          <a href="1.1-introduction.pdf" class="hover:text-coral transition-colors">1.1 — Introduction & Motivation</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="1.2-distributed-systems.pdf" class="hover:text-coral transition-colors">1.2 — Distributed Systems Fundamentals</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="1.3-mapreduce.pdf" class="hover:text-coral transition-colors">1.3 — Batch Processing: MapReduce & Beyond</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="1.4-data-modeling.pdf" class="hover:text-coral transition-colors">1.4 — Data Modeling at Scale</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="1.5-cost-modeling.pdf" class="hover:text-coral transition-colors">1.5 — Cost Modeling & Performance Reasoning</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+      </ul>
+
+      <h3 class="text-sm font-bold uppercase tracking-widest text-coral mb-3">Day 2 — Storage & Query Execution</h3>
+      <ul class="mb-6 space-y-1">
+        <li class="flex justify-between items-baseline">
+          <a href="2.1-storage-formats.pdf" class="hover:text-coral transition-colors">2.1 — Storage Formats & Distributed File Systems</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="2.2-spark.pdf" class="hover:text-coral transition-colors">2.2 — Apache Spark & Query Execution Internals</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+      </ul>
+
+      <h3 class="text-sm font-bold uppercase tracking-widest text-coral mb-3">Day 3 — Stream Processing & Real-Time Analytics</h3>
+      <ul class="mb-6 space-y-1">
+        <li class="flex justify-between items-baseline">
+          <a href="3.1-flink.pdf" class="hover:text-coral transition-colors">3.1 — Apache Flink: Stream Processing Engine</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="3.2-flink-advanced.pdf" class="hover:text-coral transition-colors">3.2 — Advanced Flink: Windows, State & Guarantees</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="3.3-clickhouse.pdf" class="hover:text-coral transition-colors">3.3 — ClickHouse: Real-Time Analytics at Scale</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="3.4-pipeline-theory.pdf" class="hover:text-coral transition-colors">3.4 — Data Pipelines: Theory & Reasoning</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+      </ul>
+
+      <h3 class="text-sm font-bold uppercase tracking-widest text-coral mb-3">Day 4 — Advanced Techniques & Projects</h3>
+      <ul class="space-y-1">
+        <li class="flex justify-between items-baseline">
+          <a href="4.1-probabilistic.pdf" class="hover:text-coral transition-colors">4.1 — Probabilistic Data Structures</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="4.2-differential-dataflow.pdf" class="hover:text-coral transition-colors">4.2 — Differential Dataflow & Incremental Computation</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="4.3-project-briefing.pdf" class="hover:text-coral transition-colors">4.3 — Project Briefing</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Labs -->
+    <section class="mb-14">
+      <h2 class="text-2xl font-bold border-b-2 border-coral pb-1 mb-6">Labs</h2>
+      <ul class="space-y-1">
+        <li class="flex justify-between items-baseline">
+          <a href="lab-1.1-single-node-benchmark.pdf" class="hover:text-coral transition-colors">1.1 — Benchmarking a Single-Node Pipeline</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-1.2-distributed-kv.pdf" class="hover:text-coral transition-colors">1.2 — Partition & Replication in a Distributed KV Store</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-1.3-mapreduce.pdf" class="hover:text-coral transition-colors">1.3 — Word-Count and Join in MapReduce</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-1.4-star-schema.pdf" class="hover:text-coral transition-colors">1.4 — Star Schema & Join Strategies in PostgreSQL</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-1.5-cost-modeling.pdf" class="hover:text-coral transition-colors">1.5 — Cost Modeling & Performance Reasoning</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-2.1-file-formats.pdf" class="hover:text-coral transition-colors">2.1 — Query Performance Across File Formats</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-2.2-spark-query-plans.pdf" class="hover:text-coral transition-colors">2.2 — Reading & Optimizing Spark Query Plans</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-3.1-flink-pipeline.pdf" class="hover:text-coral transition-colors">3.1 — Building a Flink Pipeline on Kafka</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-3.2-flink-windows.pdf" class="hover:text-coral transition-colors">3.2 — Windowed Aggregations with Watermarks</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-3.3-lattice-pipeline.pdf" class="hover:text-coral transition-colors">3.3 — Modeling a Pipeline as a Lattice</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-3.4-clickhouse.pdf" class="hover:text-coral transition-colors">3.4 — Billion-Row Analytics in ClickHouse</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-4.1-probabilistic-structures.pdf" class="hover:text-coral transition-colors">4.1 — Probabilistic Data Structures: Exact vs Approximate</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+        <li class="flex justify-between items-baseline">
+          <a href="lab-4.2-incremental-dataflow.pdf" class="hover:text-coral transition-colors">4.2 — Incremental Computation: From Recomputation to Deltas</a>
+          <span class="text-xs text-gray-400 ml-2 shrink-0">PDF</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Datasets -->
+    <section class="mb-14">
+      <h2 class="text-2xl font-bold border-b-2 border-coral pb-1 mb-6">Datasets</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+
+        <a href="https://www.gharchive.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">GH Archive</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~3 GB/day</span>
+          </div>
+          <p class="text-sm text-gray-500">Hourly JSON archives of all public GitHub events since 2011.</p>
+        </a>
+
+        <a href="https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">NYC Taxi Trips</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~300 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Every taxi and for-hire vehicle trip in NYC. Parquet format.</p>
+        </a>
+
+        <a href="https://stream.wikimedia.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Wikimedia EventStreams</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">Live SSE</span>
+          </div>
+          <p class="text-sm text-gray-500">Real-time stream of all edits across all Wikimedia projects.</p>
+        </a>
+
+        <a href="https://archive.org/details/stackexchange" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Stack Exchange</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~60 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Complete dump of all Stack Exchange sites including Stack Overflow.</p>
+        </a>
+
+        <a href="https://www.gdeltproject.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">GDELT</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~500 MB/day</span>
+          </div>
+          <p class="text-sm text-gray-500">Global news events from broadcast, print, and web media since 1979.</p>
+        </a>
+
+        <a href="https://www.kaggle.com/datasets/jacksoncrow/stock-market-dataset" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">US Stocks / SEC EDGAR</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~10 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Historical daily OHLCV data for all US-listed stocks and ETFs.</p>
+        </a>
+
+        <a href="https://github.com/blockchain-etl/ethereum-etl" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Ethereum</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~2 GB/mo</span>
+          </div>
+          <p class="text-sm text-gray-500">Every transaction, block, and token transfer on the Ethereum blockchain.</p>
+        </a>
+
+        <a href="https://sourcify.dev/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Sourcify</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~50 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Verified Ethereum smart contract source code and ABI metadata.</p>
+        </a>
+
+        <a href="https://opensky-network.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">OpenSky Network</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~10 GB/mo</span>
+          </div>
+          <p class="text-sm text-gray-500">Real-time and historical ADS-B flight tracking data worldwide.</p>
+        </a>
+
+        <a href="https://academictorrents.com/details/56aa49f9653ba545f48df2e33679f014d2829c10" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Reddit (Pushshift)</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~2 TB</span>
+          </div>
+          <p class="text-sm text-gray-500">Full archive of all Reddit comments and submissions since 2005.</p>
+        </a>
+
+        <a href="https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Spotify Playlists</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~5 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">1 million user-created playlists with 66 million track entries.</p>
+        </a>
+
+        <a href="https://planet.openstreetmap.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">OpenStreetMap</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~70 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Collaborative map of Earth with full changeset history and diffs.</p>
+        </a>
+
+        <a href="https://commoncrawl.org/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Common Crawl</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~400 TB</span>
+          </div>
+          <p class="text-sm text-gray-500">Monthly crawl of the public web. Columnar index ~20 GB per crawl.</p>
+        </a>
+
+        <a href="https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Binance Market Data</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">Live WS</span>
+          </div>
+          <p class="text-sm text-gray-500">Real-time trades, order book, and candlestick data via WebSocket.</p>
+        </a>
+
+        <a href="https://citibikenyc.com/system-data" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">Citi Bike</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~10 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Every Citi Bike trip in NYC since 2013, plus real-time station status.</p>
+        </a>
+
+        <a href="https://www.ncei.noaa.gov/data/global-summary-of-the-day/" class="block border border-gray-200 rounded-lg p-4 hover:border-coral transition-colors bg-white">
+          <div class="flex items-start justify-between mb-1">
+            <span class="font-bold">NOAA Weather</span>
+            <span class="text-xs bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 ml-2 shrink-0">~30 GB</span>
+          </div>
+          <p class="text-sm text-gray-500">Daily weather observations from ~10,000 stations worldwide since 1929.</p>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-gray-400 border-t border-gray-200 pt-6">
+      <p>Data Processing at Scale &mdash; Course material</p>
+      <p class="mt-1">
+        <a href="https://github.com/vbergeron/data-processing-at-scale" class="hover:text-coral transition-colors">Source on GitHub</a>
+      </p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

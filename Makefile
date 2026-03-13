@@ -15,7 +15,7 @@ LAB_STYLE     := labs/style.typ
 .PHONY: all clean watch
 
 # Build everything
-all: $(SESSION_PDFS) $(LAB_PDFS)
+all: $(SESSION_PDFS) $(LAB_PDFS) build/index.html
 
 # Each session PDF depends on its main.typ, all its sections, and the shared style.
 build/%.pdf: sessions/%/main.typ sessions/%/sections/*.typ $(SESSION_STYLE) | build
@@ -24,6 +24,10 @@ build/%.pdf: sessions/%/main.typ sessions/%/sections/*.typ $(SESSION_STYLE) | bu
 # Each lab PDF depends on its main.typ and the lab style.
 build/lab-%.pdf: labs/%/main.typ $(LAB_STYLE) | build
 	typst compile --root . $< $@
+
+# Landing page
+build/index.html: index.html | build
+	cp $< $@
 
 # Create the output directory on first build
 build:

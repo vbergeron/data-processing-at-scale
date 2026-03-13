@@ -26,13 +26,28 @@
   title-slide()
 
   if slug != "" {
-    let url = base-url + slug + ".pdf"
+    let slide-url = base-url + slug + ".pdf"
     slide[
       #align(center + horizon)[
-        #tiaoma.qrcode(url, width: 5cm)
-
-        #v(0.5em)
-        #text(size: 14pt, fill: luma(120))[#link(url)[#url]]
+        #grid(
+          columns: (1fr, 1fr),
+          column-gutter: 2cm,
+          align: center,
+          [
+            #tiaoma.qrcode(base-url, width: 4cm)
+            #v(0.4em)
+            #text(size: 12pt, weight: "bold")[Course website]
+            #v(0.2em)
+            #text(size: 10pt, fill: luma(120))[#link(base-url)[#base-url]]
+          ],
+          [
+            #tiaoma.qrcode(slide-url, width: 4cm)
+            #v(0.4em)
+            #text(size: 12pt, weight: "bold")[This presentation]
+            #v(0.2em)
+            #text(size: 10pt, fill: luma(120))[#link(slide-url)[#slide-url]]
+          ],
+        )
       ]
     ]
   }

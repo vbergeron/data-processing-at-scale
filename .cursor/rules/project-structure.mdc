@@ -9,23 +9,28 @@ alwaysApply: true
 ## Top Level
 
 ```
+index.html                 # Landing page — deployed to GitHub Pages with the PDFs
 context/                   # Course-level reference documents
-  PLAN.md                  # Syllabus — session list, learning outcomes, schedule
+  SESSIONS.md              # Syllabus — session list, learning outcomes, schedule
   PROJECTS.md              # Project catalog — 30 projects with difficulty ratings
   DATASETS.md              # Dataset descriptions, sizes, access instructions
-labs/                      # Instructor-led demo guides, one per session
-  1.1-single-node-benchmark.md
+labs/                      # Lab handouts, one folder per session
+  style.typ                # Shared document theme — imported by all labs
+  1.1-single-node-benchmark/
+    main.typ
   ...
 sessions/                  # Slide decks, one folder per session
-  style.typ                # Shared theme and layout — imported by all sessions
+  style.typ                # Shared Touying/Metropolis theme — imported by all sessions
   1.1-introduction/
   1.2-distributed-systems/
   ...
 ```
 
+- **`index.html`** — single-file landing page served via GitHub Pages. Uses Tailwind CDN for styling. Links to colocated PDFs in `build/`. Update it when sessions, labs, or datasets change.
 - **`context/`** — course-level documents that describe the overall structure, projects, and datasets. These are reference material, not slides. Update them when the syllabus or project catalog changes.
-- **`labs/`** — one Markdown file per session describing the instructor-led demo: objective, setup, step-by-step walkthrough, and key takeaways. Lab files are named to match their session number (e.g., `1.1-single-node-benchmark.md` for session 1.1). Not all sessions have a lab.
-- **`style.typ`** — single source of truth for theme setup (Touying imports, Metropolis config, `dpas-theme` function). All `main.typ` files import from here. Never duplicate theme configuration in individual sessions.
+- **`labs/`** — one folder per session containing a `main.typ` lab handout (objective, setup, walkthrough, takeaways). Lab folders are named to match their session number (e.g., `1.1-single-node-benchmark` for session 1.1). Not all sessions have a lab.
+- **`sessions/style.typ`** — single source of truth for slide theme setup (Touying imports, Metropolis config, `dpas-theme` function). All session `main.typ` files import from here. Never duplicate theme configuration in individual sessions.
+- **`labs/style.typ`** — single source of truth for lab document theme. All lab `main.typ` files import from here.
 - Each session lives in its own folder under `sessions/`.
 
 ## Session Folder Layout
@@ -34,19 +39,27 @@ sessions/                  # Slide decks, one folder per session
 sessions/<session-name>/
   main.typ            # Assembly file — typst compile target
   assets/             # Images, diagrams, data files
-  slides/             # Individual slide files
-    slide_001.typ
-    slide_002.typ
+  sections/           # Section files included by main.typ
+    01-content.typ
+    02-details.typ
     ...
 ```
 
-- **`main.typ`** — the single entry point. Contains theme setup, metadata, and `#include` statements pulling in each slide in order. This is the file passed to `typst compile`.
-- **`assets/`** — all non-code resources (images, SVGs, diagrams). Referenced from slides via relative paths.
-- **`slides/`** — one file per slide, named `slide_XXX.typ` where `XXX` is the zero-padded three-digit slide number (e.g., `slide_001.typ`, `slide_012.typ`).
+- **`main.typ`** — the single entry point. Contains theme setup, metadata, and `#include` statements pulling in each section in order. This is the file passed to `typst compile`.
+- **`assets/`** — all non-code resources (images, SVGs, diagrams). Referenced from sections via relative paths.
+- **`sections/`** — one or more files per session, included in order by `main.typ`.
+
+## Lab Folder Layout
+
+```
+labs/<lab-name>/
+  main.typ            # Single document — the compile target
+```
+
+- **`main.typ`** — self-contained lab handout. Imports `../style.typ` for the document theme.
 
 ## Rules
 
 - Never put slide content directly in `main.typ`. It only assembles.
-- Slide numbering is sequential and zero-padded to 3 digits.
-- When inserting a slide between existing ones, renumber subsequent slides to maintain ordering.
 - Assets are per-session. Do not reference assets from other sessions.
+- When adding a new session or lab, also update `index.html` with the corresponding link.
