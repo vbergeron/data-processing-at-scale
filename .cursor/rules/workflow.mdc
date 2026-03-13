@@ -1,0 +1,21 @@
+---
+description: Development workflow — ensure make watch is running before editing slides
+globs: sessions/**/*.typ
+alwaysApply: false
+---
+
+# Workflow
+
+## Live Rebuild
+
+Before editing any `.typ` file, ensure `make watch` is running so changes compile automatically.
+
+1. Check if a PID file exists at `build/watch.pid` and whether that process is still alive.
+2. If not running, start it in the background and record the PID:
+
+```bash
+make watch &
+echo $! > build/watch.pid
+```
+
+3. Do not start a second watcher if one is already active.

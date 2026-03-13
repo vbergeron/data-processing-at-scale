@@ -1,0 +1,52 @@
+---
+description: Project file organization for the course
+globs: 
+alwaysApply: true
+---
+
+# Project Structure
+
+## Top Level
+
+```
+context/                   # Course-level reference documents
+  PLAN.md                  # Syllabus — session list, learning outcomes, schedule
+  PROJECTS.md              # Project catalog — 30 projects with difficulty ratings
+  DATASETS.md              # Dataset descriptions, sizes, access instructions
+labs/                      # Instructor-led demo guides, one per session
+  1.1-single-node-benchmark.md
+  ...
+sessions/                  # Slide decks, one folder per session
+  style.typ                # Shared theme and layout — imported by all sessions
+  1.1-introduction/
+  1.2-distributed-systems/
+  ...
+```
+
+- **`context/`** — course-level documents that describe the overall structure, projects, and datasets. These are reference material, not slides. Update them when the syllabus or project catalog changes.
+- **`labs/`** — one Markdown file per session describing the instructor-led demo: objective, setup, step-by-step walkthrough, and key takeaways. Lab files are named to match their session number (e.g., `1.1-single-node-benchmark.md` for session 1.1). Not all sessions have a lab.
+- **`style.typ`** — single source of truth for theme setup (Touying imports, Metropolis config, `dpas-theme` function). All `main.typ` files import from here. Never duplicate theme configuration in individual sessions.
+- Each session lives in its own folder under `sessions/`.
+
+## Session Folder Layout
+
+```
+sessions/<session-name>/
+  main.typ            # Assembly file — typst compile target
+  assets/             # Images, diagrams, data files
+  slides/             # Individual slide files
+    slide_001.typ
+    slide_002.typ
+    ...
+```
+
+- **`main.typ`** — the single entry point. Contains theme setup, metadata, and `#include` statements pulling in each slide in order. This is the file passed to `typst compile`.
+- **`assets/`** — all non-code resources (images, SVGs, diagrams). Referenced from slides via relative paths.
+- **`slides/`** — one file per slide, named `slide_XXX.typ` where `XXX` is the zero-padded three-digit slide number (e.g., `slide_001.typ`, `slide_012.typ`).
+
+## Rules
+
+- Never put slide content directly in `main.typ`. It only assembles.
+- Slide numbering is sequential and zero-padded to 3 digits.
+- When inserting a slide between existing ones, renumber subsequent slides to maintain ordering.
+- Assets are per-session. Do not reference assets from other sessions.

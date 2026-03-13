@@ -1,0 +1,12 @@
+== Wikimedia EventStreams
+
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1em,
+  [
+    - Real-time stream of all edits across Wikipedia and sister projects
+    - ~2–5 GB for a 24–48h recording
+    - Open SSE endpoint, no auth — also available via Kafka
+  ],
+  image("../assets/wikimedia.jpg", height: 80%),
+)

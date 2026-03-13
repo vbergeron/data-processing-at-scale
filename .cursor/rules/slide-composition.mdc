@@ -1,0 +1,34 @@
+---
+description: Rules for composing and formatting Touying/Typst slides
+globs: sessions/*.typ
+alwaysApply: false
+---
+
+# Slide Composition
+
+## Structure
+
+- One idea per slide. If a slide needs "and also," split it.
+- 30pt minimum font for prose. 20pt minimum for code.
+- Code blocks: 5-10 lines max with the key line visually distinct. Longer code belongs in a live demo, not a slide.
+- Prefer diagrams, comparisons, and decision matrices over bullet lists. If a slide has more than 4 bullets, restructure it.
+- Use `#pause` for progressive disclosure: reveal one point at a time on comparison tables, step-by-step algorithms, and "predict then reveal" sequences.
+- Use `#focus-slide[...]` for the opening question of each session and for key "one sentence to remember" moments.
+
+## Rhythm
+
+- Target 30-45 slides per 90-minute session. Each slide should be on screen for 2-3 minutes, not 10.
+- No slide should stay visible for more than 5 minutes. If it does, the content should be split or moved to a live demo.
+- Place demo/exercise breaks every 15-20 minutes to reset attention.
+
+## Text
+
+- Slides complement speech. They show what's hard to say (diagrams, code, data). The instructor says what's hard to show (intuition, motivation, connections).
+- Never put full sentences that will be read aloud verbatim. The slide and the instructor should not say the same thing.
+- Use consistent terminology across all sessions. If a concept has synonyms, pick one and flag alternatives explicitly when first introduced.
+
+## Metropolis Theme Conventions
+
+- Keep the progress bar enabled (default).
+- Session title in `config-info.title`, day identifier in `config-info.institution` (used as footer).
+- Level-2 headings (`==`) create content slides. Do not use level-1 headings (`=`) within a session file — those create section dividers and belong only if the session has distinct multi-topic arcs.

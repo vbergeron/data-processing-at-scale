@@ -1,0 +1,45 @@
+---
+description: Pedagogical guidelines for slide content and session design
+globs: sessions/*.typ
+alwaysApply: false
+---
+
+# Slide Content & Pedagogy
+
+## Session Arc
+
+- Open with a question or problem, not a definition. Use `#focus-slide` for this. The question should be one students cannot yet answer — the session becomes the answer.
+- Close with a callback to the opener and a one-sentence takeaway. If a student is asked "what did you learn?" they should be able to repeat this sentence.
+- Structure as: motivating problem -> naive/failing approach -> why it fails -> real solution -> demo verifying it works.
+
+## Core Vocabulary & Technical Notions
+
+Every session must explicitly introduce and define the technical terms students need to express their intent precisely — to teammates, in documentation, and in LLM prompts. Vocabulary is the primary tool students take away.
+
+- **Define before using.** When a term first appears, give it a one-sentence definition on its own slide or as a visually distinct callout. Don't let terms slip in implicitly.
+- **Distinguish similar concepts explicitly.** When two terms overlap or are commonly confused, dedicate a slide to the distinction. Students must leave knowing which term to use in which context.
+- **Name the design space.** For each major decision, name all the options so students have the full vocabulary — not just the one used in the demo.
+- **End each session with a vocabulary recap.** A dedicated slide listing the 5-8 key terms introduced, each with a one-line definition. This is the student's prompt toolkit: knowing these terms is what makes them effective when working with an LLM or reading documentation.
+
+## LLM-Aware Teaching
+
+Students have extensive LLM access. The lecture's role is to build judgment, not transfer implementation details.
+
+- **Vocabulary unlocks prompting.** A student who knows the precise technical term can prompt an LLM and get a working implementation. One who uses vague language gets a generic answer. The precise term is the difference between a useful prompt and a useless one.
+- **Teach "when to" over "how to."** Replace API walkthroughs with decision matrices: "If your use case is X, choose Y, because Z." The student takes this judgment to the LLM, which writes the code.
+- **Teach the smell test.** Equip students to recognize when output is wrong. Give them heuristics for diagnosing bad results, inefficient plans, and incorrect configurations. These are what LLMs cannot provide.
+- **Foreground failure modes over happy paths.** LLMs produce good happy-path code. Lectures should disproportionately cover what goes wrong, why, and how to diagnose it.
+- **Foreground concepts LLMs get wrong.** Identify the specific areas in each session where LLMs consistently produce subtly incorrect answers, and spend extra time on those.
+
+## Interaction Patterns
+
+- **Cold-call estimation:** "How large is this? How long will it take? Take 10 seconds." No grading, just forces active thinking.
+- **Predict-then-reveal:** Before a demo, ask students to commit to a prediction. Wrong predictions teach more than right ones.
+- **"What's wrong with this?":** Show a broken or naive approach and ask students to find the flaw.
+- **Concrete before abstract:** Show the problem (demo) before the theory (lecture). Students who've seen the failure firsthand absorb the theory of why it happened far better.
+
+## Content Filters
+
+- Every topic must pass: "Would a student with an LLM but without this slide make a worse decision?" If not, cut it.
+- Every topic must pass: "If a student skips this, what goes wrong in their project?" If nothing, it might be trivia.
+- Prefer conceptual frameworks over lists. A decision matrix with trade-offs beats a top-10 enumeration that creates an illusion of understanding.
