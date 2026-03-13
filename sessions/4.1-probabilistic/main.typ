@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [4.1 — Probabilistic Data Structures], day: [Day 4])
+#show: dpas-theme.with(title: [4.1 — Probabilistic Data Structures], day: [Day 4], slug: "4.1-probabilistic")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"

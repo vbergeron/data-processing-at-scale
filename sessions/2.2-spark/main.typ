@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [2.2 — Apache Spark & Query Execution Internals], day: [Day 2])
+#show: dpas-theme.with(title: [2.2 — Apache Spark & Query Execution Internals], day: [Day 2], slug: "2.2-spark")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"

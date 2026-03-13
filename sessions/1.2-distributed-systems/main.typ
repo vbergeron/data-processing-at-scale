@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [1.2 — Distributed Systems Fundamentals], day: [Day 1])
+#show: dpas-theme.with(title: [1.2 — Distributed Systems Fundamentals], day: [Day 1], slug: "1.2-distributed-systems")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"

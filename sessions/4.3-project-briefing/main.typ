@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [4.3 — Project Briefing], day: [Day 4])
+#show: dpas-theme.with(title: [4.3 — Project Briefing], day: [Day 4], slug: "4.3-project-briefing")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"

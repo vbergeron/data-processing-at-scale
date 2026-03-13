@@ -1,7 +1,10 @@
 #import "@preview/touying:0.6.3": *
 #import themes.metropolis: *
+#import "@preview/tiaoma:0.3.0"
 
-#let dpas-theme(title: [], day: [], body) = {
+#let base-url = "https://vbergeron.github.io/data-processing-at-scale/"
+
+#let dpas-theme(title: [], day: [], slug: "", body) = {
   show: metropolis-theme.with(
     aspect-ratio: "16-9",
     footer: self => self.info.institution,
@@ -17,5 +20,18 @@
     ),
   )
   title-slide()
+
+  if slug != "" {
+    let url = base-url + slug + ".pdf"
+    slide[
+      #align(center + horizon)[
+        #tiaoma.qrcode(url, width: 5cm)
+
+        #v(0.5em)
+        #text(size: 14pt, fill: luma(120))[#link(url)[#url]]
+      ]
+    ]
+  }
+
   body
 }

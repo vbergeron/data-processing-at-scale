@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [2.1 — Storage Formats & Distributed File Systems], day: [Day 2])
+#show: dpas-theme.with(title: [2.1 — Storage Formats & Distributed File Systems], day: [Day 2], slug: "2.1-storage-formats")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"

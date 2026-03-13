@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [3.3 — ClickHouse: Real-Time Analytics at Scale], day: [Day 3])
+#show: dpas-theme.with(title: [3.3 — ClickHouse: Real-Time Analytics at Scale], day: [Day 3], slug: "3.3-clickhouse")
 
 #include "slides/slide_001.typ"
 #include "slides/slide_002.typ"
