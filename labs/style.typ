@@ -49,7 +49,7 @@
   {
     set align(center)
     v(1cm)
-    text(size: 20pt, weight: "bold", fill: rgb("#E06C75"), title)
+    text(size: 20pt, weight: "bold", fill: black, title)
     v(0.6cm)
     text(size: 11pt, fill: luma(80))[
       #session \
