@@ -152,6 +152,55 @@
 - Cost: every write pays a round-trip latency penalty; one slow follower blocks everything
 - Used by: etcd, ZooKeeper (Raft/ZAB), PostgreSQL (`synchronous_commit`)
 
+== A network partition
+
+#{
+  let r = 1.5
+  let pts = range(8).map(i => {
+    let a = i * 45deg
+    (calc.cos(a) * r, calc.sin(a) * r)
+  })
+  let left = (2, 3, 4, 5)
+
+  let draw-clique(partition: false) = cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    for i in range(8) {
+      for j in range(i + 1, 8) {
+        let cross = (i in left) != (j in left)
+        if not (partition and cross) {
+          line(pts.at(i), pts.at(j), stroke: 0.4pt + luma(160))
+        }
+      }
+    }
+    if partition {
+      let mid-a = 67.5deg
+      let d = 2.0
+      line(
+        (calc.cos(mid-a) * d, calc.sin(mid-a) * d),
+        (-calc.cos(mid-a) * d, -calc.sin(mid-a) * d),
+        stroke: (paint: red, thickness: 2pt, dash: "dashed"),
+      )
+    }
+    for p in pts {
+      circle(p, radius: 0.22, fill: rgb("#c8e6c9"), stroke: 0.8pt)
+    }
+  })
+
+  align(center,
+    grid(
+      columns: 2,
+      gutter: 2cm,
+      align: center,
+      draw-clique(),
+      draw-clique(partition: true),
+    )
+  )
+}
+
+- Both sides are alive, but they *cannot talk to each other*
+- Clients can still reach each node independently
+- The system must now choose: consistency or availability?
+
 == Split-brain
 
 #{

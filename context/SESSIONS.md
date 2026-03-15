@@ -6,9 +6,9 @@
 
 ---
 
-## Day 1 — Foundations & Data Modeling (7h30, 5 sessions)
+## Day 1 — Foundations (4h30, 3 sessions)
 
-**Learning outcomes:** Students can explain why single-machine processing fails at scale, reason about partitioning and replication trade-offs, implement a MapReduce computation, design a denormalized data model for analytical workloads, and estimate the cost of a data operation from first principles.
+**Learning outcomes:** Students can explain why single-machine processing fails at scale, write Scala programs using FP principles that are safe to distribute, and reason about partitioning, replication, and consistency trade-offs.
 
 **1.1 — Introduction & Motivation**
 
@@ -17,43 +17,23 @@
 - Vertical vs horizontal scaling
 - Overview of the modern data stack
 - Taxonomy: batch, micro-batch, streaming
-- **Lab:** [Benchmarking a single-node pipeline to its breaking point](labs/1.1-single-node-benchmark/main.typ) — any language, SQLite, system monitor
 
-**1.2 — Distributed Systems Fundamentals**
+**1.2 — Distributed Programming with Scala**
+
+- History of FP: λ-calculus, LISP, ML, Scala
+- What is Scala: positioning, compilation backends, the JVM ecosystem (Spark, Kafka, Akka/Pekko, Flink, Druid, Trino)
+- Principles of FP and their distributed payoff: functions as values, immutability, referential transparency, pure functions
+- Data modeling with traits, ADTs (case classes, sealed traits, enums), and generics
+- **Lab:** [Benchmarking a single-node pipeline to its breaking point](labs/1.2-single-node-benchmark/main.typ) — Scala, scala-cli, SQLite (JDBC), system monitor
+
+**1.3 — Distributed Systems Fundamentals**
 
 - Network partitions, failures, and fallacies of distributed computing
 - CAP theorem and its practical implications
 - Consistency models: strong, eventual, causal
 - Partitioning strategies: hash, range, consistent hashing
 - Replication: leader/follower, quorum-based
-- **Demo:** [Observing partition and replication behavior in a distributed KV store](labs/1.2-distributed-kv/main.typ)
-
-**1.3 — Batch Processing: MapReduce & Beyond**
-
-- The MapReduce programming model
-- Shuffle, sort, and combiners
-- Limitations of MapReduce (multi-stage, iterative workloads)
-- From Hadoop to modern engines
-- Data locality and fault tolerance
-- **Demo:** [Implementing word-count and join in a MapReduce-style framework](labs/1.3-mapreduce/main.typ)
-
-**1.4 — Data Modeling at Scale**
-
-- Why modeling changes at scale: cost of joins, denormalization trade-offs
-- Star schemas, wide tables, and pre-aggregation patterns
-- Normalization vs denormalization: when and why
-- **Demo:** [Designing a star schema and comparing join strategies in PostgreSQL](labs/1.4-star-schema/main.typ)
-
-**1.5 — Cost Modeling & Performance Reasoning**
-
-- The memory and storage hierarchy: L1/L2/L3 cache, RAM, SSD, network, object storage — bandwidth and latency at each level
-- Sequential vs random access: why the access pattern matters more than the medium
-- Columnar vs row-oriented storage: a cache-efficiency argument, not just a format choice
-- The cost anatomy of a shuffle: serialization, network transfer, disk spill, deserialization
-- Amdahl's law applied to data parallelism: what serializes and what doesn't
-- Strong vs weak scaling: adding machines to go faster vs adding machines to handle more data
-- Back-of-the-envelope estimation: how long should this query take? How to sanity-check before running
-- Why "just add more nodes" is not always the answer: coordination overhead, straggler effects, diminishing returns
+- **Lab:** [Observing partition and replication behavior in a distributed KV store](labs/1.3-distributed-kv/main.typ)
 
 ---
 

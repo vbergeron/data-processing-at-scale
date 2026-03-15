@@ -1,36 +1,70 @@
 #import "../style.typ": *
 
 #show: lab-theme.with(
-  title: [Lab 1.1 — Benchmarking a Single-Node Pipeline to its Breaking Point],
-  session: [Session 1.1 — Introduction & Motivation],
+  title: [Lab 1.2 — Benchmarking a Single-Node Pipeline to its Breaking Point],
+  session: [Session 1.2 — Distributed Programming with Scala],
   format: [Hands-on lab],
-  tools: [Any language (student's choice), SQLite, system monitor (`btop` / `htop` / Activity Monitor / Task Manager)],
+  tools: [Scala 3 (`scala-cli`), SQLite (via JDBC), system monitor (`btop` / `htop` / Activity Monitor / Task Manager)],
 )
 
 = Objective
 
-You are going to re-invent a database — badly — and then watch a real one demolish your code. By progressively scaling a synthetic workload from 100K to 100M rows you will see exactly where single-machine processing breaks down and _why_ databases exist.
+You will process the same dataset three ways — naive hand-rolled code, then a proper database (SQLite), then push both until they break. By scaling from 100K to 100M rows you will experience firsthand the progression from single-file processing to database to the point where even a database is not enough — and distributed processing becomes necessary.
+
+= Setup
+
+Install `scala-cli` — a single binary that compiles and runs Scala files with no project setup:
+
+```
+curl -sSLf https://scala-cli.virtuslab.org/get | sh
+```
+
+Create a working directory for this lab. Each program is a standalone `.scala` file run with `scala-cli run .` or `scala-cli run MyFile.scala`.
+
+To use SQLite from Scala, add a JDBC dependency directive at the top of your file:
+
+```
+//> using dep org.xerial:sqlite-jdbc:3.49.1.0
+```
+
+`scala-cli` resolves and downloads it automatically on first run.
+
+== IDE support
+
+*VS Code / Cursor* — install the *Metals* extension (`scalameta.metals`). Open your lab folder, Metals will detect `scala-cli` directives and provide completions, go-to-definition, and inline errors. No additional configuration needed.
+
+*IntelliJ IDEA* — install the *Scala* plugin (bundled with IDEA Ultimate, available in the marketplace for Community). Open the folder, then right-click a `.scala` file and select _Set up scala-cli project_ — IDEA imports the dependency directives and enables full IDE support.
+
+#pagebreak()
 
 = Data Model
 
 Two tables:
 
+*customers*
 #table(
-  columns: 4,
-  align: (left, left, left, left),
-  table.header([*Table*], [*Column*], [*Type*], [*Notes*]),
-  [customers], [`customer_id`], [UUID], [primary key],
-  [customers], [`name`], [TEXT], [first + last],
-  [customers], [`city`], [TEXT], [from provided list],
-  [orders], [`order_id`], [UUID], [primary key],
-  [orders], [`customer_id`], [UUID], [FK → customers],
-  [orders], [`amount`], [INT], [cents (e.g.~14999 = \$149.99)],
-  [orders], [`ts`], [TIMESTAMP], [random within 2024],
+  columns: 3,
+  align: (left, left, left),
+  table.header([*Column*], [*Type*], [*Notes*]),
+  [`customer_id`], [UUID], [primary key],
+  [`name`], [TEXT], [first + last],
+  [`city`], [TEXT], [from provided list],
+)
+
+*orders*
+#table(
+  columns: 3,
+  align: (left, left, left),
+  table.header([*Column*], [*Type*], [*Notes*]),
+  [`order_id`], [UUID], [primary key],
+  [`customer_id`], [UUID], [FK → customers],
+  [`amount`], [INT], [cents (e.g.~14999 = \$149.99)],
+  [`ts`], [TIMESTAMP], [random within 2024],
 )
 
 = Material
 
-Three text files are provided in the `assets/` folder (downloadable from the course website). Each file contains one entry per line, sorted alphabetically:
+Three text files are provided as a `lab-1.2-single-node-benchmark-assets.tar.gz` archive, downloadable from the course website. Extract it into your working directory. Each file contains one entry per line, sorted alphabetically:
 
 - `cities.txt` — 150 world cities
 - `first_names.txt` — 98 first names
@@ -49,6 +83,8 @@ Write a program that produces `customers.csv` with 10,000 rows:
 - `name`: a random first name + last name from the provided lists
 - `city`: picked uniformly at random from `cities.txt`
 
+_Hints:_ `scala.io.Source.fromFile` reads text files into lines. `java.util.UUID.randomUUID()` generates UUIDs. `scala.util.Random.nextInt(n)` picks a random index. `java.io.PrintWriter` writes to a file.
+
 Verify: `wc -l customers.csv` should print 10,000 (plus a header if you added one). Open it, spot-check a few rows.
 
 === 1.2 — Order generator
@@ -58,6 +94,8 @@ Write a program that produces `orders.csv` with a _configurable_ row count (CLI 
 - `customer_id`: a random UUID picked from the customer file you just generated
 - `amount`: random integer in [100, 50000] (i.e.~\$1.00 to \$500.00)
 - `ts`: random timestamp within 2024 (uniform random second between `2024-01-01T00:00:00` and `2024-12-31T23:59:59`)
+
+_Hints:_ `args(0).toInt` reads a CLI argument. `java.time.LocalDateTime` and `java.time.temporal.ChronoUnit` handle timestamps. Load `customer_id` values from the CSV you generated in 1.1 — read the file, extract the first column into a `Vector`, and pick random entries.
 
 Generate a first file with *100,000 rows*. Verify: `wc -l`, `head -5`, check file size on disk.
 
@@ -73,7 +111,10 @@ Generate a first file with *100,000 rows*. Verify: `wc -l`, `head -5`, check fil
 
 Read `customers.csv` and build an in-memory lookup: `customer_id → city`. This is your "index."
 
+_Hint:_ parse each line into a `Map[String, String]` mapping customer ID to city. `System.nanoTime()` before and after gives you wall-clock time.
+
 Measure: how long does this take? How much memory does it consume? (Check your system monitor — it should be negligible.)
+
 
 === 2.2 — Scan, filter, join, aggregate
 
@@ -83,9 +124,11 @@ Read `orders.csv` line by line. For each row:
 + Look up `city` from the customer hashmap using `customer_id`
 + Accumulate `sum(amount)` into a `city → total_revenue` hashmap
 
+_Hint:_ `Source.fromFile(...).getLines()` gives you a lazy iterator. You can chain `.map`, `.filter`, `.groupBy` from the collection API, or use a mutable `HashMap` with `updateWith` — both approaches work. `toSeq.sortBy(_._1)` sorts by city name.
+
 Print the result: revenue per city, sorted by city name.
 
-Measure and record wall-clock time. At 100K rows this should be sub-second in any language.
+Measure and record wall-clock time. At 100K rows this should be sub-second.
 
 === 2.3 — Observe on your system monitor
 
@@ -119,7 +162,9 @@ CREATE TABLE orders (
 
 === 3.2 — Bulk load the CSVs
 
-Import `customers.csv` and `orders.csv` into the tables. Use SQLite's `.import`, your language's SQLite bindings, or a bulk `INSERT` loop.
+Import `customers.csv` and `orders.csv` into the tables using JDBC.
+
+_Hint:_ `java.sql.DriverManager.getConnection("jdbc:sqlite:lab.db")` opens (or creates) the database. Use a `PreparedStatement` with batched inserts (`addBatch` / `executeBatch`) inside a transaction for speed — row-by-row commits are orders of magnitude slower.
 
 Measure how long the import takes. This is overhead your hand-rolled code does not pay — but it is a one-time cost.
 
@@ -157,7 +202,7 @@ Run your step 2 code on the 10M-row file. Measure wall-clock time.
 - *Memory:* the two hashmaps are tiny (10K customers, 150 cities), but the file read buffer may grow
 - *Disk I/O:* sustained read throughput — how close to your disk's maximum?
 
-Record the time. Compare across languages if others in the room made different choices.
+Record the time.
 
 === 4.3 — Rerun in SQLite
 
@@ -210,7 +255,7 @@ Run your order generator with *100,000,000 rows*. Note:
 Run your step 2 code.
 
 *Observe on your system monitor:*
-- *CPU:* single core at 100% for minutes (interpreted languages) or tens of seconds (compiled)
+- *CPU:* single core at 100% for tens of seconds
 - *Disk:* sustained sequential read — the bottleneck may shift to I/O if the file does not fit in the OS page cache
 - *Memory:* watch for growth if your code buffers lines or allocates intermediate strings
 

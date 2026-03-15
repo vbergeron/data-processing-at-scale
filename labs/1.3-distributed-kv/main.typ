@@ -1,8 +1,8 @@
 #import "../style.typ": *
 
 #show: lab-theme.with(
-  title: [Demo 1.2 — Observing Partition and Replication in a Distributed KV Store],
-  session: [Session 1.2 — Distributed Systems Fundamentals],
+  title: [Demo 1.3 — Observing Partition and Replication in a Distributed KV Store],
+  session: [Session 1.3 — Distributed Systems Fundamentals],
   format: [Instructor-led hands-on demo],
   tools: [Docker Compose, etcd (or Redis Cluster)],
 )

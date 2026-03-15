@@ -1,6 +1,6 @@
 #import "../style.typ": *
 
-#show: dpas-theme.with(title: [1.1 — Introduction & Motivation], day: [Day 1], slug: "1.1-introduction", lab: "1.1-single-node-benchmark")
+#show: dpas-theme.with(title: [1.1 — Introduction & Motivation], day: [Day 1], slug: "1.1-introduction")
 
 // Instructor intro (blank)
 #include "sections/01-intro.typ"
