@@ -23,34 +23,51 @@
 
 #align(center,
   fletcher.diagram(
-    spacing: 3cm,
+    spacing: (1.8cm, 1.5cm),
     node-stroke: 0.8pt,
-    node((0, 0), [Node A], fill: rgb("#c8e6c9"), stroke: rgb("#388e3c")),
-    node((1, 0), text(fill: rgb("#c62828"))[Node B ?], fill: rgb("#ffcdd2"), stroke: (paint: rgb("#c62828"), dash: "dashed")),
-    node((2, 0), [Node C], fill: rgb("#c8e6c9"), stroke: rgb("#388e3c")),
-    edge((0, 0), (1, 0), "->", stroke: (dash: "dashed")),
-    edge((1, 0), (2, 0), "->", stroke: (dash: "dashed")),
+    // Node A — healthy
+    node((0, 0), [CPU], width: 2cm),
+    node((1, 0), [Mem], width: 2cm),
+    node((2, 0), [Disk], width: 2cm),
+    edge((0, 0), (1, 0), "-"),
+    edge((1, 0), (2, 0), "-"),
+    node((-0.5, 0), text(size: 10pt, weight: "bold")[Node A], stroke: none),
+    node(enclose: ((0, 0), (2, 0)), stroke: 1.5pt, corner-radius: 6pt),
+    // Node B — failed
+    node((0, 1), [CPU], width: 2cm),
+    node((1, 1), [Mem], width: 2cm),
+    node((2, 1), [Disk], width: 2cm),
+    edge((0, 1), (1, 1), "-", stroke: (dash: "dashed")),
+    edge((1, 1), (2, 1), "-", stroke: (dash: "dashed")),
+    node((-0.5, 1), text(size: 10pt, weight: "bold")[Node B ?], stroke: none),
+    node(enclose: ((0, 1), (2, 1)), stroke: (thickness: 1.5pt, dash: "dashed"), corner-radius: 6pt),
+    // Node C — healthy
+    node((0, 2), [CPU], width: 2cm),
+    node((1, 2), [Mem], width: 2cm),
+    node((2, 2), [Disk], width: 2cm),
+    edge((0, 2), (1, 2), "-"),
+    edge((1, 2), (2, 2), "-"),
+    node((-0.5, 2), text(size: 10pt, weight: "bold")[Node C], stroke: none),
+    node(enclose: ((0, 2), (2, 2)), stroke: 1.5pt, corner-radius: 6pt),
+    // Network links
+    edge((1, 0), (1, 1), "<->", stroke: (dash: "dashed")),
+    edge((1, 1), (1, 2), "<->", stroke: (dash: "dashed")),
   )
 )
 
-- Some nodes fail while others keep running
-- You cannot tell if a remote node is *dead* or just *slow*
-- *Partial failure* — the defining characteristic of distributed systems
-
 == The 8 fallacies of distributed computing
 
-#text(size: 14pt)[
-  Peter Deutsch identified seven assumptions that new engineers make about networks (1994). \
-  James Gosling later added the eighth.
-]
 
 #v(1em)
 
-#text(size: 12pt, fill: luma(80))[
-  _"Essentially everyone, when they first build a distributed application, makes the following eight assumptions. All prove to be false in the long run and all cause big trouble and painful learning experiences."_ 
-  \ — Peter Deutsch, _The Eight Fallacies of Distributed Computing_, Sun Microsystems, 1994. \
+#text(size: 16pt, fill: luma(80))[
+  _"Essentially everyone, when they first build a distributed application, makes the following eight assumptions. \
+  All prove to be false in the long run and all cause big trouble and painful learning experiences."_ 
 ]
 
+#text(size: 14pt, fill: luma(80))[
+  — Peter Deutsch & James Gosling, _The Eight Fallacies of Distributed Computing_, Sun Microsystems, 1994. \
+]
 
 == Fallacy 1 — The network is reliable
 
@@ -185,4 +202,8 @@
 - *Failure detector* — a component that guesses whether a remote node is alive
 - Too aggressive → healthy nodes declared dead (thrashing)
 - Too conservative → long outages before recovery starts
+
+== \
+
+#hero[We can't prevent failures. \ So we replicate.]
 

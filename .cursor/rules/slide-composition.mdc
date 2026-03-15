@@ -14,6 +14,7 @@ alwaysApply: false
 - Prefer diagrams, comparisons, and decision matrices over bullet lists. If a slide has more than 4 bullets, restructure it.
 - Use `#pause` for progressive disclosure: reveal one point at a time on comparison tables, step-by-step algorithms, and "predict then reveal" sequences.
 - Use `#hero[...]` (defined in `style.typ`) for centered, large-text emphasis — opening questions, key takeaways, "one sentence to remember" moments. Import it with `#import "../../style.typ": hero`.
+- Never place two hero/transition slides back-to-back. A hero should be followed by content slides, not another hero. If two sections meet at a hero boundary (one ending with a hero, the next opening with one), merge them into a single transition or add content between them.
 
 ## Rhythm
 

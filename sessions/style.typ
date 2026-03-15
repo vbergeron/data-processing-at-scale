@@ -8,7 +8,7 @@
   align(center + horizon, text(size: 28pt, body))
 }
 
-#let dpas-theme(title: [], day: [], slug: "", lab: "", body) = {
+#let dpas-theme(title: [], day: [], slug: "", lab: (), next: "", body) = {
   show: metropolis-theme.with(
     aspect-ratio: "16-9",
     footer: self => self.info.institution,
@@ -54,14 +54,49 @@
 
   body
 
-  if lab != "" {
-    let url = base-url + "lab-" + lab + ".pdf"
+  // Normalize lab to an array
+  let labs = if type(lab) == str and lab != "" { (lab,) } else if type(lab) == array { lab } else { () }
+
+  if labs.len() == 1 {
+    let url = base-url + "lab-" + labs.at(0) + ".pdf"
     slide[
       #align(center + horizon)[
         #text(size: 24pt, weight: "bold")[Lab]
         #v(1em)
         #tiaoma.qrcode(url, width: 5cm)
+        #v(0.5em)
+        #text(size: 14pt, fill: luma(120))[#link(url)[#url]]
+      ]
+    ]
+  } else if labs.len() > 1 {
+    slide[
+      #align(center + horizon)[
+        #text(size: 24pt, weight: "bold")[Labs]
+        #v(1em)
+        #grid(
+          columns: labs.len() * (1fr,),
+          column-gutter: 2cm,
+          align: center,
+          ..labs.map(l => {
+            let url = base-url + "lab-" + l + ".pdf"
+            [
+              #tiaoma.qrcode(url, width: 4cm)
+              #v(0.4em)
+              #text(size: 14pt, fill: luma(120))[#link(url)[#l]]
+            ]
+          })
+        )
+      ]
+    ]
+  }
 
+  if next != "" {
+    let url = base-url + next + ".pdf"
+    slide[
+      #align(center + horizon)[
+        #text(size: 24pt, weight: "bold")[Next]
+        #v(1em)
+        #tiaoma.qrcode(url, width: 5cm)
         #v(0.5em)
         #text(size: 14pt, fill: luma(120))[#link(url)[#url]]
       ]

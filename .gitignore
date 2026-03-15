@@ -1,1 +1,5 @@
 build/
+.bloop/
+.bsp/
+.metals/
+.scala-build/

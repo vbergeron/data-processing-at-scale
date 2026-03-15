@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "data-processing-at-scale-metals": {
+      "url": "http://localhost:33487/mcp"
+    }
+  }
+}
