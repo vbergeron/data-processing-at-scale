@@ -25,29 +25,29 @@
   fletcher.diagram(
     spacing: (1.8cm, 1.5cm),
     node-stroke: 0.8pt,
-    // Node A — healthy
-    node((0, 0), [CPU], width: 2cm),
-    node((1, 0), [Mem], width: 2cm),
-    node((2, 0), [Disk], width: 2cm),
+    // Node A
+    node((0, 0), [CPU], width: 3cm),
+    node((1, 0), [Memory], width: 3cm),
+    node((2, 0), [Disk], width: 3cm),
     edge((0, 0), (1, 0), "-"),
     edge((1, 0), (2, 0), "-"),
-    node((-0.5, 0), text(size: 10pt, weight: "bold")[Node A], stroke: none),
+    node((-0.5, 0), stroke: none),
     node(enclose: ((0, 0), (2, 0)), stroke: 1.5pt, corner-radius: 6pt),
-    // Node B — failed
-    node((0, 1), [CPU], width: 2cm),
-    node((1, 1), [Mem], width: 2cm),
-    node((2, 1), [Disk], width: 2cm),
-    edge((0, 1), (1, 1), "-", stroke: (dash: "dashed")),
-    edge((1, 1), (2, 1), "-", stroke: (dash: "dashed")),
-    node((-0.5, 1), text(size: 10pt, weight: "bold")[Node B ?], stroke: none),
-    node(enclose: ((0, 1), (2, 1)), stroke: (thickness: 1.5pt, dash: "dashed"), corner-radius: 6pt),
-    // Node C — healthy
-    node((0, 2), [CPU], width: 2cm),
-    node((1, 2), [Mem], width: 2cm),
-    node((2, 2), [Disk], width: 2cm),
+    // Node B
+    node((0, 1), [CPU], width: 3cm),
+    node((1, 1), [Memory], width: 3cm),
+    node((2, 1), [Disk], width: 3cm),
+    edge((0, 1), (1, 1), "-"),
+    edge((1, 1), (2, 1), "-"),
+    node((-0.5, 1), stroke: none),
+    node(enclose: ((0, 1), (2, 1)), stroke: 1.5pt, corner-radius: 6pt),
+    // Node C
+    node((0, 2), [CPU], width: 3cm),
+    node((1, 2), [Memory], width: 3cm),
+    node((2, 2), [Disk], width: 3cm),
     edge((0, 2), (1, 2), "-"),
     edge((1, 2), (2, 2), "-"),
-    node((-0.5, 2), text(size: 10pt, weight: "bold")[Node C], stroke: none),
+    node((-0.5, 2), stroke: none),
     node(enclose: ((0, 2), (2, 2)), stroke: 1.5pt, corner-radius: 6pt),
     // Network links
     edge((1, 0), (1, 1), "<->", stroke: (dash: "dashed")),
@@ -170,7 +170,7 @@
 == Failure taxonomy
 
 - Most data systems only tolerate *crash* failures
-- Byzantine fault tolerance exists (*BFT*) using crytography
+- Byzantine fault tolerance exists (*BFT*) using cryptography
 - If you are asked for a practical case for *blockchains*, this is it.
 
 == Timeouts — guessing at failure
@@ -205,5 +205,5 @@
 
 == \
 
-#hero[We can't prevent failures. \ So we replicate.]
+#hero[We can't prevent failures.]
 

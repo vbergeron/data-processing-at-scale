@@ -70,8 +70,9 @@
 )
 
 - One *leader* accepts all writes; *followers* replicate the write-ahead log
-- Reads can go to any replica (trade-off: freshness vs throughput)
-- If the leader dies, a follower is promoted (*failover*) — risk of data loss or *split-brain*
+- No write conflicts — the leader serializes every mutation into a single ordered log
+- Reads can go to any replica — scale read throughput by adding followers
+- Simple mental model: behaves like a single node with backup copies
 
 == Asynchronous replication
 
@@ -284,44 +285,35 @@
 - When the partition heals, the system must reconcile divergent state
 - Solutions: fencing tokens, consensus protocols (Raft, Paxos)
 
-== Quorum replication — W + R > N
+== Leaderless replication
 
-#{
-  let w-only = rgb("#c8e6c9")
-  let r-only = rgb("#90caf9")
-  let overlap = rgb("#ce93d8")
-  let idle = rgb("#e0e0e0")
-
-  let qnode(label, fill) = box(
-    stroke: 0.8pt, radius: 4pt, inset: (x: 12pt, y: 8pt),
-    fill: fill,
-    text(size: 12pt, weight: "bold")[#label],
+#align(center,
+  fletcher.diagram(
+    spacing: (2.5cm, 2cm),
+    node-stroke: 0.8pt,
+    node((1, 0), [Client], stroke: (dash: "dashed")),
+    node((0, 1), [Node A], fill: rgb("#c8e6c9")),
+    node((1, 1), [Node B], fill: rgb("#c8e6c9")),
+    node((2, 1), [Node C], fill: rgb("#c8e6c9")),
+    edge((1, 0), (0, 1), "->", stroke: rgb("#1565c0")),
+    edge((1, 0), (1, 1), "->", [write], stroke: rgb("#1565c0")),
+    edge((1, 0), (2, 1), "->", stroke: rgb("#1565c0")),
+    edge((0, 1), (1, 1), "<->", stroke: (paint: luma(160), dash: "dashed")),
+    edge((1, 1), (2, 1), "<->", [gossip], label-side: right, stroke: (paint: luma(160), dash: "dashed")),
   )
+)
 
-  align(center,
-    stack(dir: ltr, spacing: 1cm,
-      qnode("N1", w-only),
-      qnode("N2", w-only),
-      qnode("N3", overlap),
-      qnode("N4", r-only),
-      qnode("N5", r-only),
-    )
-  )
+- No designated leader — the *client* sends writes to multiple nodes directly
+- Nodes exchange updates among themselves via *gossip* (anti-entropy)
+- No failover needed: if one node is down, the others keep serving
+- But how does the client know a read is up to date?
 
-  v(0.5em)
-
-  align(center,
-    stack(dir: ltr, spacing: 1.5cm,
-      stack(dir: ltr, spacing: 4pt, rect(fill: w-only, width: 1em, height: 1em, stroke: 0.5pt), [Write (W = 3)]),
-      stack(dir: ltr, spacing: 4pt, rect(fill: overlap, width: 1em, height: 1em, stroke: 0.5pt), [Overlap]),
-      stack(dir: ltr, spacing: 4pt, rect(fill: r-only, width: 1em, height: 1em, stroke: 0.5pt), [Read (R = 3)]),
-    )
-  )
-}
+== Quorum reads & writes — W + R > N
 
 - *Quorum*: a minimum number of nodes that must participate in an operation
+- Write to *W* nodes, read from *R* nodes, out of *N* total replicas
 - If `W + R > N`, at least one node in every read has the latest write
-- No single leader — any node can accept writes (with quorum acknowledgment)
+- The client picks the value with the highest version number
 
 == Tuning W, R, N
 
@@ -339,17 +331,16 @@
 - W=1 is "fire and forget" — fast writes, but data can be lost
 - R=1 is "read from anyone" — fast reads, but might be stale
 
-== Leader/follower vs quorum — when to use which
+== Leader/follower vs leaderless — when to use which
 
 #table(
   columns: 3,
   align: (left, center, center),
-  table.header([], [*Leader/follower*], [*Quorum*]),
+  table.header([], [*Leader/follower*], [*Leaderless (quorum)*]),
   [Write throughput], [One bottleneck], [Distributed],
   [Read scaling], [Add followers], [Any node serves reads],
   [Failover complexity], [High (leader election)], [Low (no single leader)],
   [Consistency], [Depends on sync/async], [Tunable via W, R, N],
-  [Used by], [PostgreSQL, MySQL, MongoDB], [Cassandra, DynamoDB, Riak],
 )
 
 == \

@@ -4,25 +4,6 @@
 
 = CAP & Consistency
 
-== The scenario
-
-#align(center,
-  fletcher.diagram(
-    spacing: (5cm, 2.5cm),
-    node-stroke: 0.8pt,
-    node((0, 0), [Node A \ `x = 42`]),
-    node((1, 0), [Node B \ `x = ?`]),
-    edge((0, 0), (1, 0), "<->", [replication], label-side: left),
-    node((0, 1), [Client 1], stroke: (dash: "dashed")),
-    node((1, 1), [Client 2], stroke: (dash: "dashed")),
-    edge((0, 1), (0, 0), "->", [`write(x, 42)`], label-side: left),
-    edge((1, 1), (1, 0), "->", [`read(x)`], label-side: right),
-  )
-)
-
-Client 1 writes to A, Client 2 reads from B. \
-What should the read return?
-
 == Three properties
 
 #table(
@@ -105,6 +86,44 @@ What should the read return?
   ZooKeeper, etcd, HBase, FoundationDB
 ]
 
+== Consistency models — what can a reader see?
+
+#align(center,
+  cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+
+    let c1x = 0; let ax = 4; let bx = 8; let c2x = 12
+
+    line((c1x, 0), (c1x, -8), stroke: 1.2pt)
+    line((ax, 0), (ax, -8), stroke: 1.2pt)
+    line((bx, 0), (bx, -8), stroke: 1.2pt)
+    line((c2x, 0), (c2x, -8), stroke: 1.2pt)
+
+    content((c1x, 0.6), text(size: 11pt, weight: "bold")[Client 1])
+    content((ax, 0.6), text(size: 11pt, weight: "bold")[Node A])
+    content((bx, 0.6), text(size: 11pt, weight: "bold")[Node B])
+    content((c2x, 0.6), text(size: 11pt, weight: "bold")[Client 2])
+
+    line((c1x + 0.2, -1), (ax - 0.2, -1.5), stroke: 1pt, mark: (end: ">"))
+    content((2, -0.7), text(size: 10pt)[`write(x, 42)`])
+
+    line((ax - 0.2, -2), (c1x + 0.2, -2.5), stroke: 1pt, mark: (end: ">"))
+    content((2, -2.7), text(size: 14pt, weight: "bold")[?])
+
+    content((6, -3.75), text(size: 32pt, weight: "bold")[?])
+
+    line((c2x - 0.2, -5.5), (bx + 0.2, -6), stroke: 1pt, mark: (end: ">"))
+    content((10, -5.2), text(size: 10pt)[`read(x)`])
+
+    line((bx + 0.2, -6.5), (c2x - 0.2, -7), stroke: 1pt, mark: (end: ">"))
+    content((10, -7.2), text(size: 14pt, weight: "bold")[?])
+
+    content((6, -8.3), text(size: 9pt, fill: luma(120))[time ↓])
+  })
+)
+
+When does A respond? What do A and B exchange? What does B return?
+
 == Strong consistency — linearizability
 
 #align(center,
@@ -119,8 +138,8 @@ What should the read return?
     line((c2x, 0), (c2x, -9), stroke: 1.2pt)
 
     content((c1x, 0.6), text(size: 11pt, weight: "bold")[Client 1])
-    content((lx, 0.6), text(size: 11pt, weight: "bold")[Leader (A)])
-    content((fx, 0.6), text(size: 11pt, weight: "bold")[Follower (B)])
+    content((lx, 0.6), text(size: 11pt, weight: "bold")[Node A])
+    content((fx, 0.6), text(size: 11pt, weight: "bold")[Node B])
     content((c2x, 0.6), text(size: 11pt, weight: "bold")[Client 2])
 
     line((c1x + 0.2, -1), (lx - 0.2, -1.5), stroke: 1pt, mark: (end: ">"))
@@ -166,8 +185,8 @@ What should the read return?
     line((c2x, 0), (c2x, -7.5), stroke: 1.2pt)
 
     content((c1x, 0.6), text(size: 11pt, weight: "bold")[Client 1])
-    content((lx, 0.6), text(size: 11pt, weight: "bold")[Leader (A)])
-    content((fx, 0.6), text(size: 11pt, weight: "bold")[Follower (B)])
+    content((lx, 0.6), text(size: 11pt, weight: "bold")[Node A])
+    content((fx, 0.6), text(size: 11pt, weight: "bold")[Node B])
     content((c2x, 0.6), text(size: 11pt, weight: "bold")[Client 2])
 
     line((c1x + 0.2, -1), (lx - 0.2, -1.5), stroke: 1pt, mark: (end: ">"))
@@ -211,8 +230,8 @@ What should the read return?
     line((c2x, 0), (c2x, -9.5), stroke: 1.2pt)
 
     content((c1x, 0.6), text(size: 11pt, weight: "bold")[Client 1])
-    content((lx, 0.6), text(size: 11pt, weight: "bold")[Leader (A)])
-    content((fx, 0.6), text(size: 11pt, weight: "bold")[Follower (B)])
+    content((lx, 0.6), text(size: 11pt, weight: "bold")[Node A])
+    content((fx, 0.6), text(size: 11pt, weight: "bold")[Node B])
     content((c2x, 0.6), text(size: 11pt, weight: "bold")[Client 2])
 
     line((c1x + 0.2, -1), (lx - 0.2, -1.5), stroke: 1pt, mark: (end: ">"))
@@ -248,7 +267,6 @@ What should the read return?
   })
 )
 
-- Same scenario as eventual — but the system tracks the *causal dependency*
 - The follower delays its response until replication catches up
 - Writes are fast (like eventual), reads are causally correct (like strong)
 
