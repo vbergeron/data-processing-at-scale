@@ -31,12 +31,12 @@
   set heading(numbering: "1.1.")
   show heading.where(level: 1): it => {
     v(0.5em)
-    text(fill: rgb("#E06C75"), it)
+    text(fill: rgb("#B5303B"), it)
     v(0.3em)
   }
   show heading.where(level: 2): it => {
     v(0.4em)
-    text(fill: rgb("#E06C75").darken(20%), it)
+    text(fill: rgb("#B5303B").darken(20%), it)
     v(0.2em)
   }
   show heading.where(level: 3): it => {
@@ -57,7 +57,7 @@
       *Tools:* #tools
     ]
     v(0.4cm)
-    line(length: 60%, stroke: 1pt + rgb("#E06C75"))
+    line(length: 60%, stroke: 1pt + rgb("#B5303B"))
     v(1cm)
   }
 

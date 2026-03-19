@@ -33,7 +33,8 @@
 - Consistency models: strong, eventual, causal
 - Partitioning strategies: hash, range, consistent hashing
 - Replication: leader/follower, quorum-based
-- **Lab:** [Observing partition and replication behavior in a distributed KV store](labs/1.3-distributed-kv/main.typ)
+- **Lab:** [Observing partition and replication behavior in a distributed KV store](labs/1.3.1-distributed-kv/main.typ)
+- **Lab:** [Distributed batch processing and partitioning](labs/1.3.2-batch-processing/main.typ)
 
 ---
 

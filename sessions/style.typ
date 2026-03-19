@@ -13,8 +13,8 @@
     aspect-ratio: "16-9",
     footer: self => self.info.institution,
     config-colors(
-      primary: rgb("#E06C75"),
-      primary-light: rgb("#e8a5ab"),
+      primary: rgb("#B5303B"),
+      primary-light: rgb("#d4777e"),
     ),
     config-info(
       title: title,
