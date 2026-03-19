@@ -4,7 +4,7 @@
   title: [Lab 2.1 — What Does My Query Actually Read?],
   session: [Session 2.1 — Storage Formats & Distributed File Systems],
   format: [Individual hands-on lab],
-  tools: [Python 3.11+, DuckDB 1.x — PyArrow optional (Exercise 4)],
+  tools: [DuckDB 1.x CLI or Python 3.11+ — parquet-tools (Rust) optional (Exercise 4)],
 )
 
 = Objective
@@ -23,8 +23,9 @@ minimises I/O — and why?_
 
 You can run all queries in this lab either with the DuckDB CLI or the Python API — pick whichever you prefer.
 
-*DuckDB CLI* — download the single binary from #link("https://duckdb.org/docs/installation/")[duckdb.org/docs/installation] and run:
+*DuckDB CLI* — one-liner installer:
 ```bash
+curl https://install.duckdb.org | sh
 duckdb          # interactive shell
 ```
 
@@ -34,7 +35,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install duckdb
 ```
 
-The SQL is identical in both. CLI users can prefix any query with `.mode line` to get readable output, and use `.quit` to exit. Exercise 4 (bonus) additionally requires `pip install pyarrow` (Python only).
+The SQL is identical in both. CLI users can prefix any query with `.mode line` to get readable output, and use `.quit` to exit.
 
 == Dataset
 
@@ -153,8 +154,33 @@ predicates = [
 
 = Exercise 4 (bonus) — Parquet footer inspection
 
-Requires `pip install pyarrow`. PyArrow exposes the full Parquet metadata without running a query.
-Scala users can use Arrow Java instead: #link("https://arrow.apache.org/docs/java/ipc.html")[arrow.apache.org/docs/java/ipc.html].
+The Parquet footer is a binary Thrift blob appended to the file. Two tools let
+you read it without writing a query: `parquet-tools` (Rust, zero-runtime) and
+PyArrow (Python).
+
+== Option A — parquet-tools (Rust)
+
+Install the CLI via Cargo (requires Rust — `curl https://sh.rustup.rs | sh` if absent):
+
+```bash
+cargo install parquet
+```
+
+Then inspect the file:
+
+```bash
+# Summary: row-group count, total rows, compression, encodings
+parquet meta data/trips_snappy.parquet
+
+# Per-column statistics (min/max/null count) for every row group
+parquet row-group-meta data/trips_snappy.parquet
+```
+
+== Option B — PyArrow
+
+```bash
+pip install pyarrow
+```
 
 ```python
 import pyarrow.parquet as pq
@@ -162,28 +188,28 @@ import pyarrow.parquet as pq
 meta = pq.read_metadata("data/trips_snappy.parquet")
 print(f"Row groups : {meta.num_row_groups}")
 print(f"Total rows : {meta.num_rows:,}")
-print()
 
-# Inspect statistics for fare_amount in row group 0
 rg = meta.row_group(0)
 for i in range(rg.num_columns):
     col = rg.column(i)
     if "fare" in col.path_in_schema:
         stats = col.statistics
         print(f"Column     : {col.path_in_schema}")
-        print(f"Min        : {stats.min}")
-        print(f"Max        : {stats.max}")
+        print(f"Min / Max  : {stats.min} / {stats.max}")
         print(f"Null count : {stats.null_count}")
-        print(f"Encoding   : {col.encodings}")
+        print(f"Encodings  : {col.encodings}")
 ```
 
-Run this for all row groups and answer:
+== Questions
 
-+ How many row groups does the file have?
-+ What is the global max of `fare_amount`? Does this match the anomalous taxi
-  fares NYC is known for?
++ How many row groups does the file have, and roughly how many rows per group?
++ What is the global max of `fare_amount`? Does it match the anomalous fares
+  NYC taxi data is known for?
 + Is `fare_amount` dictionary-encoded? Why or why not (think about cardinality)?
-+ Find a column that *is* dictionary-encoded. Which one and why?
++ Find a column that *is* dictionary-encoded. Which one, and why does
+  low-cardinality favour dictionary encoding?
++ The footer is written *after* the data columns. What does this mean for a
+  reader that wants only the statistics — must it read the whole file?
 
 = Key Takeaways
 
