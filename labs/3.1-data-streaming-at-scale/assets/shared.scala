@@ -1,5 +1,3 @@
-//> using scala 3.3.3
-
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.util.Random

@@ -15,9 +15,27 @@ State in Flink is always scoped to an operator instance.
 
 #v(0.6em)
 
-Keyed state is the common case. Each key's state lives on the sub-task that owns that key — never a remote lookup. Session 3.2 covers state backends and advanced patterns in depth.
+Keyed state is the common case. Each key's state lives on the sub-task that owns that key — never a remote lookup.
 
-== Keyed state in code
+== State backends
+
+Flink stores in-flight state in a pluggable *state backend*:
+
+#table(
+  columns: (1fr, 1fr),
+  [*HashMapStateBackend*], [*EmbeddedRocksDBStateBackend*],
+  [JVM heap — state as Java objects], [Local disk + block cache (RocksDB)],
+  [Fast random access], [~5–10× slower reads; incremental checkpoints],
+  [Limited by heap; GC pressure at scale], [State can exceed available RAM],
+  [Default for development], [Default for production at scale],
+)
+
+`MapState` with RocksDB stores each map entry as a separate RocksDB key — only the accessed entry is deserialised. With `HashMapStateBackend` the entire map is deserialised on every access.
+
+
+== ValueState
+
+A single typed cell per key. The simplest and most common state primitive.
 
 ```scala
 class CountPerUser extends KeyedProcessFunction[String, Event, String] {
@@ -32,23 +50,74 @@ class CountPerUser extends KeyedProcessFunction[String, Event, String] {
 }
 ```
 
-- `ValueState[T]` — a single mutable cell per key
-- `getRuntimeContext.getState(...)` — registers the state with Flink so it is included in checkpoints
-- State survives failures: on recovery Flink restores the cell to its last checkpointed value
+- `.value()` — reads current value; returns `null` if uninitialised
+- `.update(v)` — writes a new value
+- `.clear()` — deletes the cell (frees memory; TTL can also do this automatically)
 
-== State backends
+== ListState
 
-Flink stores in-flight state in a pluggable *state backend*:
+An ordered list of values per key. Flink serialises the list efficiently — no need to read-modify-write the full list for append-only patterns.
 
-#table(
-  columns: (1fr, 1fr),
-  [*HashMapStateBackend*], [*EmbeddedRocksDBStateBackend*],
-  [JVM heap — state as Java objects], [Local disk + block cache (RocksDB)],
-  [Fast; limited by heap size], [Unbounded state; ~5–10× slower reads],
-  [Default for development], [Default for production at scale],
-)
+```scala
+lazy val buffer: ListState[Event] =
+  getRuntimeContext.getListState(
+    new ListStateDescriptor("buffer", classOf[Event])
+  )
 
-Switch to RocksDB when state exceeds available heap, or when you need incremental checkpoints.
+// append without reading the full list
+buffer.add(event)
+
+// read all buffered events for this key
+buffer.get().asScala.foreach(process)
+
+// replace the entire list
+buffer.update(newList.asJava)
+```
+
+Use case: buffer events within a custom window, then emit when a timer fires.
+
+== MapState
+
+A key→value map per Flink key. Avoids deserialising the full structure when you only need one entry.
+
+```scala
+lazy val positions: MapState[String, Long] =
+  getRuntimeContext.getMapState(
+    new MapStateDescriptor("positions", classOf[String], classOf[Long])
+  )
+
+// per-symbol net quantity inside a per-user keyed operator
+val qty = Option(positions.get(symbol)).getOrElse(0L)
+positions.put(symbol, qty + delta)
+```
+
+- `.get(k)` — point lookup; returns `null` if absent
+- `.put(k, v)`, `.remove(k)`, `.contains(k)`, `.entries()` — standard map operations
+- With RocksDB backend, each entry is stored as a separate key — only the accessed entry is deserialised
+
+Use case: per-user portfolio positions (`userId` → `Map(symbol → netQty)`).
+
+== State TTL
+
+Without expiry, state for inactive keys accumulates indefinitely. `StateTtlConfig` evicts entries automatically.
+
+```scala
+val ttl = StateTtlConfig
+  .newBuilder(Time.hours(24))
+  .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
+  .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
+  .cleanupInBackground()
+  .build()
+
+val descriptor = new ValueStateDescriptor("count", classOf[Long])
+descriptor.enableTimeToLive(ttl)
+```
+
+- `OnCreateAndWrite` — TTL resets on each `.update()` call; idle keys expire
+- `NeverReturnExpired` — expired cells read as `null`, not stale data
+- `cleanupInBackground()` — RocksDB compaction removes expired entries without a separate sweep
+
+TTL is the primary defence against unbounded state growth in long-running jobs.
 
 == Fault tolerance
 
@@ -72,7 +141,29 @@ Flink periodically takes a *consistent snapshot* of all operator state — a *ch
   )
 )
 
-The JobManager injects a *checkpoint barrier* into each source stream. Barriers flow with data; when an operator has seen a barrier on every input it snapshots its state and forwards the barrier. On failure, Flink resets all operators to the last completed checkpoint and replays from there.
+The JobManager injects a *checkpoint barrier* into each source stream. Barriers flow with data; when an operator has seen a barrier on *every* input it snapshots its state and forwards the barrier. On failure, Flink resets all operators to the last completed checkpoint and replays from there.
+
+#text(size: 9pt, fill: luma(120))[Parallel inputs require barrier alignment — the operator buffers records from faster inputs until the barrier arrives on all channels, ensuring a globally consistent cut.]
+
+== Savepoints vs checkpoints
+
+#table(
+  columns: (1fr, 1fr),
+  [*Checkpoint*], [*Savepoint*],
+  [Triggered automatically by Flink], [Triggered manually: `flink savepoint <jobId>`],
+  [For failure recovery], [For deliberate lifecycle events],
+  [Deleted when superseded], [Retained indefinitely — you manage them],
+  [Opaque binary format], [Portable — survives operator reordering with stable UIDs],
+)
+
+== Zero-downtime upgrade with savepoints
+
++ Assign stable `uid`s to all operators: `.uid("window-agg")`
++ Trigger a savepoint: `flink savepoint <jobId>`
++ Cancel the job
++ Deploy the new version: `flink run --fromSavepoint <path>`
+
+State is restored key-by-key; operators that no longer exist are ignored; new operators start with empty state.
 
 == Exactly-once semantics
 

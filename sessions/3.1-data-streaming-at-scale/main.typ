@@ -7,4 +7,5 @@
 #include "sections/03-spark-streaming.typ"
 #include "sections/04-flink-datastream.typ"
 #include "sections/05-flink-state.typ"
-#include "sections/06-vocabulary.typ"
+#include "sections/06-advanced-operators.typ"
+#include "sections/07-vocabulary.typ"

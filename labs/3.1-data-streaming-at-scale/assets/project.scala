@@ -11,6 +11,9 @@
 // JSON format for file and table connectors
 //> using dep org.apache.flink:flink-json:2.2.0
 
+// Jackson — JSON parsing in the DataStream API
+//> using dep com.fasterxml.jackson.module:jackson-module-scala_3:2.21.2
+
 // Logging (Flink expects SLF4J + Log4j2 at runtime)
 //> using dep org.apache.logging.log4j:log4j-slf4j2-impl:2.25.3
 //> using dep org.apache.logging.log4j:log4j-core:2.25.3

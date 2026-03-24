@@ -2,6 +2,10 @@
 
 = Apache Flink
 
+== Apache Flink
+
+#align(center + horizon, image("../assets/flink-logo.png", width: 35%))
+
 == Architecture
 
 #align(center, image("../assets/flink-processes.svg", width: 70%))
@@ -79,6 +83,54 @@ timestamped
 - `.keyBy` — routes each record to the sub-task that owns its key (state stays local)
 - `.window(...)` — choose the assigner: `TumblingEventTimeWindows`, `SlidingEventTimeWindows`, or `EventTimeSessionWindows`
 - `.aggregate` / `.process` — called once per closed window; result flows downstream
+
+== Allowed lateness
+
+The watermark closes a window — but late records can still trickle in. `.allowedLateness` keeps the window accumulator alive for a grace period and *re-emits* an updated result for each late arrival.
+
+```scala
+timestamped
+  .keyBy(_.userId)
+  .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+  .allowedLateness(Time.seconds(30))
+  .sideOutputLateData(lateTag)
+  .aggregate(new SumAggregator())
+```
+
+Two independent knobs:
+
+#table(
+  columns: (1fr, 1fr),
+  [*Watermark lag*], [*Allowed lateness*],
+  [How long before the window closes], [How long after closing to accept corrections],
+  [Controls first-result latency], [Controls correction window],
+  [Records inside lag → included], [Records inside lateness → trigger re-emit],
+)
+
+After allowed lateness expires, any further late record goes to the *side output* — never silently dropped.
+
+== Side outputs
+
+A side output is a secondary typed stream branching off any operator. The main path is unaffected.
+
+```scala
+val lateTag = OutputTag[Trade]("late-trades")
+
+val result = trades
+  .keyBy(_.symbol)
+  .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+  .allowedLateness(Time.seconds(30))
+  .sideOutputLateData(lateTag)
+  .aggregate(new NotionalAggregator())
+
+// Main output — on-time aggregated results
+result.addSink(mainSink)
+
+// Side output — truly late records, routed separately
+result.getSideOutput(lateTag).addSink(lateAuditSink)
+```
+
+Side outputs are not limited to late data. Any `ProcessFunction` or `KeyedProcessFunction` can call `ctx.output(tag, value)` to split a stream by any condition — invalid records, high-value alerts, debug traces — without forking the pipeline.
 
 == Flink SQL
 

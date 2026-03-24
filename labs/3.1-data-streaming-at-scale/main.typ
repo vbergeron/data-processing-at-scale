@@ -1,22 +1,22 @@
 #import "../style.typ": *
 
 #show: lab-theme.with(
-  title: [Lab 3.1 — Building a Reliable Portfolio Aggregator],
+  title: [Lab 3.1 — Portfolio Analytics with the Flink DataStream API],
   session: [Session 3.1 — Data Streaming at Scale],
   format: [Guided lab],
-  tools: [Scala CLI, Apache Flink 2.2, Flink SQL Client],
+  tools: [Scala CLI, Apache Flink 2.2, DataStream API],
 )
 
 = Objective
 
-Build a streaming portfolio aggregator in five incremental steps. Each step adds one concern — positions, then time windows, then late events, then live valuation, then fault tolerance — so that at every stage you understand exactly what problem the next step solves.
+Build a streaming portfolio analytics pipeline using the Flink DataStream API — no SQL client. Each step introduces one API primitive, building on the previous one, until the final pipeline tracks net positions, windowed notional, live market values, and inactivity alerts simultaneously.
 
 = Setup
 
 == Prerequisites
 
 - Scala CLI (`scala-cli`) installed and on `PATH`
-- Apache Flink 2.2 distribution, started locally:
+- Apache Flink 2.2 distribution — start the local cluster:
 
 ```
 ./bin/start-cluster.sh
@@ -26,186 +26,210 @@ Build a streaming portfolio aggregator in five incremental steps. Each step adds
 
 == Data generators
 
-Two generators are provided in the lab folder. Both clear their output directory on start, then emit between 20 and 50 records at 1–4 second random intervals. About 20 % of records carry a backdated `ts` (up to 15 s late) to simulate out-of-order delivery.
+Two generators produce JSONL files at 1–4 second intervals. About 20 % of records carry a backdated `ts` (up to 15 s late).
 
-*`generate-trades.scala`* — buy/sell orders:
-```json
-{"symbol":"AAPL","side":"buy","quantity":350,"price":182.14,"ts":"…"}
-{"symbol":"TSLA","side":"sell","quantity":80,"price":244.91,"ts":"…"}
-```
+Run each in a separate terminal before launching the pipeline:
 
-*`generate-prices.scala`* — writes `data/prices-baseline.json` with the reference price for all symbols, then streams live price ticks (±2 % per update):
-```json
-{"symbol":"NVDA","price":876.32,"ts":"…"}
-```
-
-Start both in separate terminals before opening the SQL client:
 ```
 scala-cli generate-trades.scala
 scala-cli generate-prices.scala
 ```
 
-Output directories: `data/trades/` and `data/prices/`.
+*`generate-trades.scala`* → `data/trades/`
 
-== SQL client and table definitions
-
-Open the Flink SQL Client and paste the two table definitions below. Keep them in the session throughout the lab — every step builds on them.
-
-```
-./bin/sql-client.sh
+```json
+{"symbol":"AAPL","side":"buy","quantity":350,"price":182.14,"ts":"2025-01-15T10:23:45Z"}
 ```
 
-```sql
-CREATE TABLE trades (
-  symbol   STRING,
-  side     STRING,
-  quantity BIGINT,
-  price    DOUBLE,
-  ts       TIMESTAMP(3),
-  WATERMARK FOR ts AS ts - INTERVAL '15' SECOND
-) WITH (
-  'connector'              = 'filesystem',
-  'path'                   = 'file:///absolute/path/to/data/trades',
-  'format'                 = 'json',
-  'source.monitor-interval'= '2s'
-);
+*`generate-prices.scala`* → `data/prices/` (and `data/prices-baseline.json`)
 
-CREATE TABLE prices (
-  symbol STRING,
-  price  DOUBLE,
-  ts     TIMESTAMP(3),
-  WATERMARK FOR ts AS ts - INTERVAL '15' SECOND
-) WITH (
-  'connector'              = 'filesystem',
-  'path'                   = 'file:///absolute/path/to/data/prices',
-  'format'                 = 'json',
-  'source.monitor-interval'= '2s'
-);
+```json
+{"symbol":"NVDA","price":876.32,"ts":"2025-01-15T10:23:46Z"}
 ```
 
-The watermark lag is set to 15 s — matching the maximum late-arrival delay in the generators.
+== Lab file
+
+The complete pipeline is in `lab.scala`. Run it with:
+
+```
+scala-cli run . --main-class lab
+```
+
+The `project.scala` file in the same directory declares all Flink 2.2 dependencies — no `build.sbt` or Maven needed. Work through the steps below by reading, running, and modifying `lab.scala`.
 
 = Walkthrough
 
-== Step 1 — Raw positions (no time)
+== Step 1 — Sources and watermarks
 
-*Goal:* see trades arriving and compute a naïve running net position per symbol.
+*Goal:* connect Flink to the generator directories and declare event-time semantics.
 
-```sql
-SELECT
-  symbol,
-  SUM(CASE WHEN side = 'buy'  THEN  quantity ELSE 0 END) AS bought,
-  SUM(CASE WHEN side = 'sell' THEN  quantity ELSE 0 END) AS sold,
-  SUM(CASE WHEN side = 'buy'  THEN  quantity ELSE -quantity END) AS net_qty
-FROM trades
-GROUP BY symbol;
+The `fileSource` helper in `lab.scala` creates a `FileSource` that watches a directory and picks up new files every 2 seconds:
+
+```scala
+def fileSource(dir: String): FileSource[String] =
+  FileSource
+    .forRecordStreamFormat(new TextLineInputFormat(), new Path(new File(dir).toURI))
+    .monitorContinuously(Duration.ofSeconds(2))
+    .build()
 ```
 
-Watch the result table update as new files land. Note that this is an *unbounded aggregation* — Flink keeps state for every symbol indefinitely. There are no windows, so results update with every arriving record regardless of its `ts`.
+Each line is parsed from JSON and assigned a watermark strategy:
 
-*Observe:* open `data/trades/` in another terminal (`watch -n1 ls -lh data/trades/`) and compare file arrival time with when results change in the SQL client.
-
-== Step 2 — Windowed notional (tumbling windows)
-
-*Goal:* measure activity over fixed time intervals, not since the beginning of time.
-
-```sql
-SELECT
-  symbol,
-  TUMBLE_START(ts, INTERVAL '30' SECOND) AS window_start,
-  TUMBLE_END  (ts, INTERVAL '30' SECOND) AS window_end,
-  SUM(CASE WHEN side = 'buy'  THEN  quantity ELSE -quantity END) AS net_qty,
-  SUM(quantity * price)                                           AS notional
-FROM trades
-GROUP BY symbol, TUMBLE(ts, INTERVAL '30' SECOND);
+```scala
+val trades = rawTrades
+  .flatMap(parseTrade(_).toList.asJava)
+  .assignTimestampsAndWatermarks(
+    WatermarkStrategy
+      .forBoundedOutOfOrderness[Trade](Duration.ofSeconds(15))
+      .withTimestampAssigner((t, _) => t.epochMillis)
+  )
 ```
 
-Results only appear when a window *closes* — that is, when the watermark advances past `window_end`. Because 20 % of records are late by up to 15 s and the watermark lag is 15 s, Flink waits before closing each window to give late events a chance to arrive.
+The 15 s bound matches the maximum late-arrival delay in the generators. Run the pipeline and open the Flink Web UI — find the running job, click the source operator, and watch the watermark metric advance.
 
-*Observe in the Web UI (`http://localhost:8081`):*
-- find the running job → operator graph → window operator
-- watch the "watermark" metric on the source operator advance in steps, not continuously
-- notice that window results arrive in bursts, not one per record
+*Observe:* the watermark does not advance continuously. It advances in steps as new events arrive and push `max(seen_ts)` forward.
 
-*Discuss:* what would happen if you set the watermark lag to 0? What if you set it to 60 s?
+== Step 2 — Running net position (ValueState)
 
-== Step 3 — Late events made visible
+*Goal:* maintain a per-symbol running net quantity using `KeyedProcessFunction` and `ValueState`.
 
-*Goal:* confirm that late events are included in the correct window, not dropped.
+```scala
+class NetPositionTracker extends KeyedProcessFunction[String, Trade, String]:
+  lazy val position: ValueState[Long] = getRuntimeContext.getState(
+    new ValueStateDescriptor("position", classOf[Long])
+  )
 
-Add a column that flags whether each record's `ts` is more than 5 s behind the current wall clock:
-
-```sql
-SELECT
-  symbol,
-  ts,
-  CURRENT_TIMESTAMP                                     AS processing_time,
-  TIMESTAMPDIFF(SECOND, ts, CURRENT_TIMESTAMP)          AS lag_sec,
-  side,
-  quantity
-FROM trades
-ORDER BY ts;
+  override def processElement(t: Trade, ctx: Context, out: Collector[String]): Unit =
+    val prev = Option(position.value()).getOrElse(0L)
+    val next = prev + t.delta          // +qty for buy, -qty for sell
+    position.update(next)
+    out.collect(s"${t.symbol}  net_qty=${next}")
 ```
 
-Compare `ts` and `processing_time` for rows where `lag_sec > 5`. These are the records the generators deliberately backdated. Verify that they appear in the correct 30-second window in the Step 2 query (re-run it alongside this one).
+Wired into the pipeline with:
 
-*Discuss:* the watermark is a *promise* — once Flink advances it past time $T$, any record with `ts < T` that arrives later is dropped as truly late. The 15 s lag is the budget you give the system to absorb network jitter.
-
-== Step 4 — Live portfolio valuation (stream–stream join)
-
-*Goal:* attach the latest market price to each position so you can compute unrealised P&L.
-
-```sql
-SELECT
-  t.symbol,
-  SUM(CASE WHEN t.side = 'buy' THEN  t.quantity ELSE -t.quantity END)   AS net_qty,
-  LAST_VALUE(p.price)                                                     AS last_price,
-  SUM(CASE WHEN t.side = 'buy' THEN  t.quantity ELSE -t.quantity END)
-    * LAST_VALUE(p.price)                                                 AS market_value
-FROM trades t
-JOIN prices p ON t.symbol = p.symbol
-GROUP BY t.symbol;
+```scala
+trades.keyBy(_.symbol).process(new NetPositionTracker()).print()
 ```
 
-This is an *unbounded stream–stream join*. Flink must buffer all trade and price records in state to evaluate future join conditions — state grows without bound.
+*Observe:* every trade emits one output record immediately — there is no buffering. The state for each symbol lives on exactly one sub-task (check the parallelism in the Web UI).
 
-*Observe:*
-- in the Web UI, inspect the "managed memory" metric on the join operator — it grows over time
-- stop the generators; the join state remains in memory until the job is cancelled
+*Experiment:* add `ListState[Trade]` to buffer individual trades and replay them. When would you need this?
 
-*Discuss:* for a production portfolio system you would use a *temporal table join* (lookup join on the latest price) instead. That keeps only the latest price per symbol in state, not the full history.
+== Step 3 — Windowed notional (tumbling windows + allowed lateness + side output)
 
-== Step 5 — Fault tolerance
+*Goal:* aggregate notional per symbol over 30-second event-time windows, with an explicit policy for late arrivals.
 
-*Goal:* verify that the aggregation survives a TaskManager failure without losing or duplicating any position.
+```scala
+val lateTag = new OutputTag[Trade]("late-trades") {}
 
-Enable checkpointing before starting the final query:
-
-```sql
-SET 'execution.checkpointing.interval' = '10s';
-SET 'execution.checkpointing.mode'     = 'EXACTLY_ONCE';
+val windowedResult = trades
+  .keyBy(_.symbol)
+  .window(TumblingEventTimeWindows.of(Duration.ofSeconds(30)))
+  .allowedLateness(Duration.ofSeconds(15))
+  .sideOutputLateData(lateTag)
+  .aggregate(new NotionalAgg(), new WindowLabel())
 ```
 
-Re-run the Step 2 windowed query. While it is running, kill one TaskManager process:
+`NotionalAgg` accumulates `netQty` and `notional` incrementally — Flink calls it once per record, not once per window. `WindowLabel` is a `ProcessWindowFunction` that adds window start/end metadata to the result.
+
+The three zones for a record with event timestamp `ts`:
+
+#table(
+  columns: (auto, 1fr),
+  [*Zone*], [*What happens*],
+  [`ts` within watermark lag], [Included in window before it closes — normal path],
+  [`ts` within allowed lateness], [Window re-opens; updated result re-emitted downstream],
+  [`ts` beyond both], [Routed to `lateTag` side output — never silently dropped],
+)
+
+*Observe:* window results appear in bursts, not one per record. Each burst corresponds to the watermark crossing a 30-second boundary. The `[LATE]` prefix in the console output marks records reaching the side output.
+
+*Experiment:* set allowed lateness to 0. How does the output change? Set the watermark bound to 0. What happens to on-time records that the generator backdates?
+
+== Step 4 — Live market value (KeyedBroadcastProcessFunction)
+
+*Goal:* enrich each trade with the latest market price and compute its market value, using the prices stream as a broadcast source.
+
+The prices stream carries price ticks for all symbols. Rather than joining two unbounded streams (which buffers everything), we broadcast the low-volume price stream to every sub-task and let each sub-task enrich the trades it owns:
+
+```scala
+val broadcastPrices = prices.broadcast(priceStateDesc)
+
+trades
+  .keyBy(_.symbol)
+  .connect(broadcastPrices)
+  .process(new PortfolioEnricher())
+  .print()
+```
+
+Inside `PortfolioEnricher`:
+
+```scala
+// Called for every price tick — all sub-tasks receive every tick
+override def processBroadcastElement(tick, ctx, out) =
+  ctx.getBroadcastState(priceStateDesc).put(tick.symbol, tick.price)
+
+// Called for every trade — reads the latest price for this symbol
+override def processElement(trade, ctx, out) =
+  val marketPrice = Option(ctx.getBroadcastState(priceStateDesc).get(trade.symbol))
+    .getOrElse(trade.price)
+  out.collect(s"${trade.symbol} Δvalue=${trade.delta * marketPrice}")
+```
+
+*Observe:* the first few trades may use the trade price as fallback (no price tick seen yet). As the price generator runs, market prices update and diverge from trade prices.
+
+*Compare:* the state footprint is one `Double` per symbol per sub-task — constant. An unbounded stream–stream join would grow linearly with the number of trades buffered.
+
+*Note:* in `processBroadcastElement`, keyed state is read-only. All mutations to broadcast state happen here; keyed state is mutated in `processElement` only.
+
+== Step 5 — Inactivity alert (event-time timers)
+
+*Goal:* emit an alert when no trade has been seen for a symbol within a 20-second event-time window.
+
+```scala
+override def processElement(t: Trade, ctx: Context, out: Collector[String]): Unit =
+  lastSeen.update(ctx.timestamp())
+  ctx.timerService().registerEventTimeTimer(ctx.timestamp() + ALERT_HORIZON_MS)
+
+override def onTimer(ts: Long, ctx: OnTimerContext, out: Collector[String]): Unit =
+  if ts >= lastSeen.value() + ALERT_HORIZON_MS then
+    out.collect(s"No trades for ${ctx.getCurrentKey} in the last 20s of event time")
+```
+
+`onTimer` fires when the watermark advances past the registered timestamp — not when wall-clock time advances. Because timers are checkpointed alongside state, they survive failures.
+
+*Observe:* alerts fire for symbols that the generator has not produced recently. When the generator finishes (after 20–50 records), alerts will fire for all symbols as the watermark advances past their last-seen timestamp.
+
+== Step 6 — Fault tolerance
+
+*Goal:* verify that all five pipelines recover from a TaskManager failure without losing state.
+
+Checkpointing is already enabled in `lab.scala`:
+
+```scala
+env.enableCheckpointing(10_000)  // every 10 s
+```
+
+While the pipeline is running:
 
 ```
-# find the pid
-jps | grep TaskManager
-kill <pid>
+jps | grep TaskManager       # find the pid
+kill <pid>                   # simulate a crash
 ```
 
 Watch the Web UI:
-- the job transitions to *RESTARTING*
-- after recovery it resumes from the last checkpoint
-- file offsets are part of the checkpoint — already-seen files are not reprocessed
-- window accumulators are restored — partial sums are not lost
+- the job enters *RESTARTING*
+- it recovers to the last checkpoint
+- net positions, window accumulators, broadcast price state, and timer registrations are all restored
+- `FileSource` offsets are part of the checkpoint — already-processed files are not re-read
 
-*Discuss:* exactly-once here applies to *internal state*. Making the output exactly-once end-to-end would additionally require a transactional sink (e.g., writing to a database with a two-phase commit connector).
+*Discuss:* the `print()` sink is not transactional. On recovery, some lines may be printed twice. What would you need to add to guarantee exactly-once output?
 
 = Key Takeaways
 
-- An unbounded aggregation (`GROUP BY` without a window) updates continuously but keeps state forever — fine for small key spaces, dangerous at scale
-- Tumbling windows bound state and emit results periodically; they only close when the watermark says all late events for that window have arrived
-- The watermark lag is a trade-off: larger lag tolerates more out-of-order delivery but increases result latency
-- Stream–stream joins are stateful by nature; temporal table (lookup) joins are the production pattern for enriching events with the latest dimension value
-- Checkpointing persists operator state *and* source offsets atomically — recovery is exactly-once for internal state at no extra application code
+- `KeyedProcessFunction` + `ValueState` is the foundation: any aggregation that SQL can express can be implemented here, plus anything SQL cannot
+- Tumbling windows with `allowedLateness` give you a two-phase commit: a first result when the watermark closes the window, then corrections within the grace period
+- The side output is the production answer to "what do I do with truly late records?" — route them, not drop them
+- Broadcast state is the efficient alternative to stream–stream join when one side is low-volume and shared across all keys
+- Event-time timers fire on watermark progress, not wall-clock time — they are reproducible, checkpointed, and safe to use in stateful operators
