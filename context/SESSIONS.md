@@ -1,7 +1,7 @@
 # Data Processing at Scale — Course Plan
 
 **Level:** Master 2  
-**Duration:** 18 hours (12 sessions × 1h30, across 4 days)  
+**Duration:** ~20 hours (12 sessions × 1h30 + 1 dedicated lab × 1h30, across 4 days)  
 **Prerequisites:** Databases, Python/SQL proficiency, basic systems knowledge, Apache Kafka (covered earlier in the year)
 
 ---
