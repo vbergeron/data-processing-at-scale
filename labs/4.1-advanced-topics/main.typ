@@ -2,7 +2,7 @@
 
 #show: lab-theme.with(
   title: [Demo 4.1 — Probabilistic Data Structures: Exact vs Approximate],
-  session: [Session 4.1 — Probabilistic Data Structures],
+  session: [Session 4.1 — Advanced Topics & Technology],
   format: [Instructor-led hands-on demo],
   tools: [Python, ClickHouse (from Day 3 setup)],
 )

@@ -20,14 +20,10 @@
 
 - Count, sum, union: trivially incremental
 - Top-K, threshold, negation: require care
-- Connection to CALM (callback to session 3.4)
+- Connection to CALM and lattice-based reasoning
 
 == Applications
 
 - Materialized views
 - Incremental ETL
 - Live dashboards
-
-== Demo
-
-*Building an incremental computation engine that maintains views via deltas*

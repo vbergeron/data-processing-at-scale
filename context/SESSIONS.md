@@ -1,7 +1,7 @@
 # Data Processing at Scale — Course Plan
 
 **Level:** Master 2  
-**Duration:** 21 hours (14 sessions × 1h30, across 4 days)  
+**Duration:** 18 hours (12 sessions × 1h30, across 4 days)  
 **Prerequisites:** Databases, Python/SQL proficiency, basic systems knowledge, Apache Kafka (covered earlier in the year)
 
 ---
@@ -64,9 +64,9 @@
 
 ---
 
-## Day 3 — Stream Processing & Real-Time Analytics (4h30, 3 sessions)
+## Day 3 — Stream Processing & Real-Time Analytics (3h, 2 sessions)
 
-**Learning outcomes:** Students can build a Flink pipeline with stateful operators, windowed aggregations, and fault-tolerance guarantees, classify a computation as monotonic or non-monotonic using the CALM framework, and model an analytics workload in ClickHouse with appropriate ORDER BY and materialized views.
+**Learning outcomes:** Students can build a Flink pipeline with stateful operators, windowed aggregations, and fault-tolerance guarantees, and model an analytics workload in ClickHouse with appropriate ORDER BY and materialized views.
 
 **3.1 — Data Streaming at Scale**
 
@@ -89,41 +89,28 @@
 - Sharding, replication, and distributed queries
 - **Demo:** [Modeling and querying a billion-row analytics dataset in ClickHouse](labs/3.2-clickhouse/main.typ)
 
-**3.3 — Data Pipelines: Theory & Reasoning**
-
-- Forward chaining (push/event-driven) vs backward chaining (pull/demand-driven)
-- Monotonic computations and the CALM theorem — coordination-free consistency
-- Lattice state machines and CRDTs: convergent distributed state
-- Idempotency and determinism as pipeline design principles
-- Connecting theory to practice: how Spark, Flink, ClickHouse, and Kafka map to these models
-- **Demo:** [Modeling a pipeline as a lattice](labs/3.3-lattice-pipeline/main.typ)
-
 ---
 
-## Day 4 — Advanced Techniques & Projects (4h30, 3 sessions)
+## Day 4 — Advanced Topics & Projects (3h, 2 sessions)
 
 **Learning outcomes:** Students can implement and reason about probabilistic data structures (HLL, Bloom filter, CMS), explain when incremental computation is correct by construction and when it requires coordination, and scope a data processing project with appropriate architectural choices.
 
-**4.1 — Probabilistic Data Structures**
+**4.1 — Advanced Topics & Technology**
 
-- The case for approximation: trading accuracy for space and speed
-- HyperLogLog: cardinality estimation in kilobytes
-- Bloom filters: membership testing with no false negatives
-- Count-Min Sketch: frequency estimation in streaming contexts
-- t-digest: approximate percentiles on distributed data
-- Practical use in ClickHouse, Spark, and Flink
-- **Demo:** [Building HLL, Bloom filters, and CMS from scratch, then comparing against ClickHouse built-ins](labs/4.1-probabilistic-structures/main.typ)
+- *Probabilistic data structures*
+  - The case for approximation: trading accuracy for space and speed
+  - HyperLogLog: cardinality estimation in kilobytes
+  - Bloom filters: membership testing with no false negatives
+  - Count-Min Sketch: frequency estimation in streaming contexts
+  - t-digest: approximate percentiles on distributed data
+- *Incremental computation*
+  - Recomputation vs incremental maintenance
+  - Differential dataflow: processing only the deltas
+  - Monotonic vs non-monotonic operators and connection to CALM
+  - Applications: materialized views, incremental ETL, live dashboards
+- **Demo:** [Probabilistic data structures — exact vs approximate](labs/4.1-advanced-topics/main.typ)
 
-**4.2 — Differential Dataflow & Incremental Computation**
-
-- Recomputation vs incremental maintenance
-- Differential dataflow: processing only the deltas
-- Partially ordered timestamps and iteration
-- Applications: materialized views, incremental ETL, live dashboards
-- Connection to lattices and CALM (callback to Day 3)
-- **Demo:** [Building an incremental computation engine that maintains views via deltas](labs/4.2-incremental-dataflow/main.typ)
-
-**4.3 — Project Briefing**
+**4.2 — Project Briefing**
 
 - Presentation of available project topics
 - Scope, expectations, and deliverables
