@@ -64,39 +64,32 @@
 
 ---
 
-## Day 3 — Stream Processing & Real-Time Analytics (6h, 4 sessions)
+## Day 3 — Stream Processing & Real-Time Analytics (4h30, 3 sessions)
 
-**Learning outcomes:** Students can build a Flink pipeline that consumes from Kafka, implement windowed aggregations with watermarks, classify a computation as monotonic or non-monotonic using the CALM framework, and model an analytics workload in ClickHouse with appropriate ORDER BY and materialized views.
+**Learning outcomes:** Students can build a Flink pipeline with stateful operators, windowed aggregations, and fault-tolerance guarantees, classify a computation as monotonic or non-monotonic using the CALM framework, and model an analytics workload in ClickHouse with appropriate ORDER BY and materialized views.
 
 **3.1 — Data Streaming at Scale**
 
 - Kafka recap (10 min): topics, partitions, consumer groups, offsets, and delivery guarantees — the contract Flink builds on
-- From Kafka to Flink: consuming events vs processing them
-- Flink architecture: JobManager, TaskManagers, parallelism
-- DataStream API and Flink SQL
-- Event time vs processing time — assigning timestamps and watermarks
-- Flink's relationship to Kafka: sources, sinks, and exactly-once integration
-- **Demo:** [Building a Flink pipeline on a Kafka source](labs/3.1-data-streaming-at-scale/main.typ)
+- Stream processing theory: bounded vs unbounded data, latency vs throughput, backpressure
+- Flink architecture: JobManager, TaskManagers, parallelism, operator graph
+- DataStream API: sources, transformations, sinks, watermark strategies
+- Event time vs processing time — windows, allowed lateness, side outputs
+- Keyed state (ValueState, ListState, MapState), state TTL, state backends
+- Fault tolerance: checkpointing, savepoints, exactly-once semantics
+- Advanced operators: Async I/O, Broadcast, Keyed Broadcast, testing harness
+- **Lab:** [Portfolio analytics with the Flink DataStream API](labs/3.1-data-streaming-at-scale/main.typ)
 
-**3.2 — Advanced Stream Processing with Flink**
-
-- Windowing: tumbling, sliding, session windows
-- Watermarks and handling late data
-- Stateful processing: keyed state, operator state, state backends (RocksDB)
-- Checkpointing and savepoints: exactly-once semantics end-to-end
-- Backpressure and flow control
-- **Demo:** [Implementing windowed aggregations with watermarks in Flink](labs/3.2-advanced-stream-processing-with-flink/main.typ)
-
-**3.3 — ClickHouse: Real-Time Analytics at Scale**
+**3.2 — ClickHouse: Real-Time Analytics at Scale**
 
 - OLAP vs OLTP: why traditional databases fall short for analytics
 - ClickHouse architecture: column-oriented storage, vectorized execution
 - MergeTree engine family: inserts, merges, and background compaction
 - Materialized views and projections for pre-aggregation
 - Sharding, replication, and distributed queries
-- **Demo:** [Modeling and querying a billion-row analytics dataset in ClickHouse](labs/3.4-clickhouse/main.typ)
+- **Demo:** [Modeling and querying a billion-row analytics dataset in ClickHouse](labs/3.2-clickhouse/main.typ)
 
-**3.4 — Data Pipelines: Theory & Reasoning**
+**3.3 — Data Pipelines: Theory & Reasoning**
 
 - Forward chaining (push/event-driven) vs backward chaining (pull/demand-driven)
 - Monotonic computations and the CALM theorem — coordination-free consistency

@@ -1,8 +1,8 @@
 #import "../style.typ": *
 
 #show: lab-theme.with(
-  title: [Demo 3.4 — Modeling and Querying a Billion-Row Analytics Dataset in ClickHouse],
-  session: [Session 3.4 — ClickHouse: Real-Time Analytics at Scale],
+  title: [Demo 3.2 — Modeling and Querying a Billion-Row Analytics Dataset in ClickHouse],
+  session: [Session 3.2 — ClickHouse: Real-Time Analytics at Scale],
   format: [Instructor-led hands-on demo],
   tools: [Docker, ClickHouse server, `clickhouse-client`],
 )
