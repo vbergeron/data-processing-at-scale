@@ -23,7 +23,9 @@ SETTINGS storage_policy = 'tiered';
 
 == \
 
-!
+#align(center + horizon,
+  image("../assets/bioh.png", height: 50%)
+)
 
 == Tiered storage — disks
 
