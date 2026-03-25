@@ -79,8 +79,7 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
 == Topology & deployment
 
 #let ch(pos) = node(pos, text(size: 8pt)[CH], fill: white, stroke: 0.6pt, width: 0.9cm, inset: 5pt, corner-radius: 3pt)
-#let keeper(pos) = node(pos, text(size: 7pt)[Keeper], fill: luma(240), stroke: 0.5pt + luma(160), width: 1.0cm, inset: 4pt, corner-radius: 3pt)
-#let dist(pos) = node(pos, text(size: 7pt)[Distributed], fill: rgb("#fce4ec"), stroke: 0.6pt, width: 1.6cm, inset: 4pt, corner-radius: 3pt)
+#let keeper(pos) = node(pos, text(size: 7pt)[Keeper], fill: luma(235), stroke: 0.5pt + luma(160), width: 1.1cm, inset: 4pt, corner-radius: 3pt)
 
 #grid(
   columns: (1fr, 1fr, 1fr),
@@ -89,61 +88,46 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
 
   rect(fill: rgb("#e8f5e9"), inset: 10pt, radius: 4pt, width: 100%)[
     #text(weight: "bold")[Standalone]
-    #v(0.5em)
-    #align(center, block(height: 2.2cm,
+    #v(0.6em)
+    #align(center, block(height: 2.8cm,
       align(center + horizon,
         fletcher.diagram(
-          spacing: (1.2cm, 0.8cm),
           node-stroke: 0.6pt,
           node-corner-radius: 3pt,
-          node((0,0), text(size: 8pt)[CH server], fill: white, width: 2cm, inset: 7pt),
+          node((0,0), text(size: 9pt)[CH], fill: white, width: 1.6cm, inset: 10pt),
         )
       )
     ))
-    #v(0.3em)
-    #text(size: 9pt, fill: luma(50))[
-      - One process, no coordination
-      - `clickhouse local` or server
-      - Tens of TB on one machine
-      - *Right choice for most teams*
-    ]
   ],
 
   rect(fill: rgb("#fff3e0"), inset: 10pt, radius: 4pt, width: 100%)[
     #text(weight: "bold")[Replicated]
-    #v(0.5em)
-    #align(center, block(height: 2.2cm,
+    #v(0.6em)
+    #align(center, block(height: 2.8cm,
       align(center + horizon,
         fletcher.diagram(
-          spacing: (1.4cm, 0.8cm),
+          spacing: (1.4cm, 0.9cm),
           node-stroke: 0.6pt,
           node-corner-radius: 3pt,
           ch((0,0)), ch((2,0)), keeper((1,1)),
-          edge((0,0),(2,0), "<->", label: text(size: 7pt)[parts], label-pos: 0.5),
+          edge((0,0),(2,0), "<->"),
           edge((0,0),(1,1), "->"),
           edge((2,0),(1,1), "->"),
         )
       )
     ))
-    #v(0.3em)
-    #text(size: 9pt, fill: luma(50))[
-      - 2–3 CH nodes + CH Keeper
-      - Parts sync at the part level
-      - Survives one node failure
-      - Same query interface as standalone
-    ]
   ],
 
   rect(fill: rgb("#fce4ec"), inset: 10pt, radius: 4pt, width: 100%)[
     #text(weight: "bold")[Sharded cluster]
-    #v(0.5em)
-    #align(center, block(height: 2.2cm,
+    #v(0.6em)
+    #align(center, block(height: 2.8cm,
       align(center + horizon,
         fletcher.diagram(
-          spacing: (1.1cm, 0.8cm),
+          spacing: (1.1cm, 0.9cm),
           node-stroke: 0.6pt,
           node-corner-radius: 3pt,
-          dist((1.5, 0)),
+          keeper((1.5, 0)),
           ch((0,1)), ch((1,1)), ch((2,1)), ch((3,1)),
           edge((1.5,0),(0,1), "->"),
           edge((1.5,0),(1,1), "->"),
@@ -154,16 +138,9 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
         )
       )
     ))
-    #v(0.3em)
-    #text(size: 9pt, fill: luma(50))[
-      - N shards × M replicas + Keeper
-      - `Distributed` table fans out queries
-      - Petabytes, millions of events/s
-      - Cloudflare / ByteDance scale
-    ]
   ],
 )
 
-#v(0.6em)
+#v(0.8em)
 
-The single-node topology is not a compromise — it is the recommended starting point. A single well-specced ClickHouse machine routinely outperforms multi-node Spark clusters on OLAP workloads. Add sharding only when disk or I/O on one machine is genuinely the bottleneck.
+A single ClickHouse node scales to tens of terabytes and is the right starting point for most teams. Replication adds fault-tolerance; sharding adds horizontal scale — both require CH Keeper for coordination.
