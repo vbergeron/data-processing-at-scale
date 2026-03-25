@@ -26,4 +26,4 @@
 
 == One sentence to remember
 
-ClickHouse is fast because it reads *only the columns it needs*, in *physical sort order*, in *SIMD-friendly batches* — and `ORDER BY` is the one schema decision that controls all three.
+ClickHouse is built without compromise: *columnar, analytical, and append-only*.

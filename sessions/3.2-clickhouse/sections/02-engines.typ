@@ -91,3 +91,28 @@ ORDER BY user_id;
 Two patterns to handle this:
 - `SELECT … FINAL` — forces deduplication at query time; correct but up to 2× slower
 - `argMax(name, version)` — pick the latest value in the application layer; fast, no `FINAL` needed
+
+== Deletes in MergeTree
+
+MergeTree is append-only — there are two ways to delete rows, with very different cost profiles.
+
+```sql
+-- Lightweight DELETE (recommended): marks rows as deleted via a hidden _row_exists mask.
+-- Fast to issue; physical removal happens on the next background merge.
+DELETE FROM events WHERE ts < now() - INTERVAL 90 DAY;
+
+-- Heavyweight mutation: rewrites every affected part entirely.
+-- Avoid on large tables; use only when immediate physical removal is required.
+ALTER TABLE events DELETE WHERE ts < now() - INTERVAL 90 DAY;
+```
+Alternatively, for large deletes, partition by time and use `DROP PARTITION` or `TRUNCATE`.
+
+== Deletes in MergeTree
+
+#table(
+  columns: (auto, 1fr, 1fr),
+  [], [*Lightweight `DELETE`*], [*`ALTER TABLE … DELETE`*],
+  [Mechanism], [Writes a `_row_exists` mask], [Rewrites all columns in affected parts],
+  [Visibility], [Rows hidden immediately; physically removed on next merge], [Rows gone after mutation completes],
+  [Cost], [Low — proportional to matched rows], [High — proportional to data in affected parts],
+)
