@@ -14,14 +14,17 @@
   [2009], [Started at Yandex by Alexey Milovidov to power Yandex.Metrica — the web analytics platform processing hundreds of billions of events per day],
   [2016], [Open-sourced under the Apache License 2.0; immediately adopted by teams outside Yandex needing sub-second OLAP at scale],
   [2021], [ClickHouse Inc. founded; Series A & B funding; cloud-managed service launched],
-  [2022–], [Adopted at Cloudflare (DNS query logs, 13M+ events/s), Uber, Discord, ByteDance, Bloomberg, Stripe, and many others],
 )
 
 #v(0.6em)
 
+*Today*, ClickHouse is adopted at Cloudflare (DNS query logs, 13M+ events/s), Uber, Discord, ByteDance, Bloomberg, Stripe, and many others.
+
+== In the beginning
+
 ClickHouse started as an internal tool for one specific problem — aggregating clickstream data fast enough to power real-time dashboards — and its design has never deviated from that goal. Every architectural decision traces back to *making analytical queries faster*.
 
-== The OLTP–OLAP continuum
+== The OLTP – OLAP continuum
 
 #align(center,
   fletcher.diagram(
@@ -51,7 +54,7 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
           ],
           rect(fill: rgb("#B5303B"), inset: 8pt, radius: 4pt, width: 100%)[
             #text(weight: "bold", size: 10pt, fill: white)[Real-time OLAP] \
-            #text(size: 9pt, fill: rgb("#fce4ec"))[*ClickHouse* \ Druid]
+            #text(size: 9pt, fill: rgb("#fce4ec"))[ClickHouse \ Druid]
           ],
         )
       )
@@ -73,18 +76,59 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
   )
 )
 
-== Where ClickHouse fits
+== Topology & deployment
 
-#table(
-  columns: (auto, 1fr, 1fr),
-  [*System*], [*Model*], [*Designed for*],
-  [PostgreSQL], [Row store, MVCC], [Transactional workloads, row-level ops],
-  [DuckDB], [Columnar, in-process], [Local analytics on files, embedded BI],
-  [Apache Spark], [Columnar DAG execution], [Large-scale ETL, shuffle-heavy batch],
-  [Apache Flink], [Row streaming], [Stateful event processing, low latency],
-  [*ClickHouse*], [*Columnar server, distributed*], [*High-throughput OLAP, sub-second queries*],
+#align(center,
+  grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: 1.2cm,
+    align: top + center,
+    [
+      #rect(fill: rgb("#e8f5e9"), inset: 12pt, radius: 4pt, width: 100%)[
+        #text(weight: "bold")[Single node] \
+        #v(0.4em)
+        #text(size: 9pt, fill: luma(80))[
+          One process. \
+          No coordination overhead. \
+          Scales to *tens of TB* on a single machine. \
+          `clickhouse local` or `clickhouse server`.
+        ]
+      ]
+      #v(0.5em)
+      #text(size: 9pt)[
+        *The right choice for most teams.* \
+        A single ClickHouse node saturates a 100 Gbps NIC before running out of CPU.
+      ]
+    ],
+    [
+      #rect(fill: rgb("#fff3e0"), inset: 12pt, radius: 4pt, width: 100%)[
+        #text(weight: "bold")[Replicated] \
+        #v(0.4em)
+        #text(size: 9pt, fill: luma(80))[
+          2–3 nodes + ClickHouse Keeper. \
+          `ReplicatedMergeTree` — parts sync at the part level. \
+          High availability, no data loss on one failure.
+        ]
+      ]
+      #v(0.5em)
+      #text(size: 9pt)[Suitable when uptime matters more than raw throughput.]
+    ],
+    [
+      #rect(fill: rgb("#fce4ec"), inset: 12pt, radius: 4pt, width: 100%)[
+        #text(weight: "bold")[Sharded cluster] \
+        #v(0.4em)
+        #text(size: 9pt, fill: luma(80))[
+          N shards × M replicas. \
+          `Distributed` table fans out reads and writes. \
+          Scales to petabytes and millions of events/s.
+        ]
+      ]
+      #v(0.5em)
+      #text(size: 9pt)[Cloudflare, ByteDance, Yandex scale — not day-one architecture.]
+    ],
+  )
 )
 
 #v(0.6em)
 
-ClickHouse does not compete with Postgres for transactions or Flink for streaming. It is purpose-built for one workload: *read a few columns from billions of rows, aggregate them, return in milliseconds*.
+The single-node topology is not a compromise — it is the recommended starting point. ClickHouse is designed so that one well-specced machine outperforms a Spark cluster for OLAP workloads. Add sharding only when a single machine's disk or I/O is genuinely the bottleneck.
