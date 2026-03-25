@@ -1,5 +1,17 @@
 = The MergeTree Engine Family
 
+== MergeTree
+
+ClickHouse's primary storage engine. The name is literal: data is written in sorted, immutable *parts*, and a background process continuously *merges* them.
+
+Every engine in the family — `ReplacingMergeTree`, `AggregatingMergeTree`, `CollapsingMergeTree` — is `MergeTree` with a specific behavior plugged into the merge step.
+
+#v(0.6em)
+
+*Relationship to LSM trees*
+
+MergeTree shares the core idea with Log-Structured Merge trees (used in RocksDB, Cassandra, LevelDB): writes are cheap because they are sequential appends, and reads amortize the cost of background compaction. The key difference is that MergeTree is *column-oriented* — each part stores data column-by-column rather than row-by-row — and compaction is driven by *analytical query patterns* (sort order, aggregation state) rather than by key range maintenance.
+
 == The write path
 
 ClickHouse writes are *append-only*. Every `INSERT` creates one or more immutable, sorted *parts* on disk. Parts are never modified — only merged.
