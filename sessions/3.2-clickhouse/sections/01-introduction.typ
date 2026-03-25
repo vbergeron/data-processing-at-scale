@@ -144,3 +144,68 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
 #v(0.8em)
 
 A single ClickHouse node scales to tens of terabytes and is the right starting point for most teams. Replication adds fault-tolerance; sharding adds horizontal scale — both require CH Keeper for coordination.
+
+== Engine ecosystem
+
+The *engine* is part of the schema declaration. It defines not just how data is stored but whether it is local, replicated, routed, buffered, or pulled from an external system.
+
+#grid(
+  columns: (1fr, 1fr),
+  column-gutter: 1.2cm,
+  row-gutter: 0.6em,
+  align: top,
+
+  [
+    #text(weight: "bold", fill: rgb("#B5303B"))[Local storage]
+    #v(0.2em)
+    #table(
+      columns: (auto, 1fr),
+      stroke: none,
+      inset: (x: 0pt, y: 3pt),
+      [`MergeTree` family], [Sorted columnar parts, background merges — the primary analytics engine],
+      [`Log` / `TinyLog`], [Append-only, no index — lightweight staging or temp tables],
+      [`Memory`], [In-memory, lost on restart — fast lookups and small working sets],
+      [`Null`], [Discards all data — useful as a materialized view source without storing raw events],
+    )
+  ],
+
+  [
+    #text(weight: "bold", fill: rgb("#B5303B"))[Distribution & buffering]
+    #v(0.2em)
+    #table(
+      columns: (auto, 1fr),
+      stroke: none,
+      inset: (x: 0pt, y: 3pt),
+      [`ReplicatedMergeTree`], [Any MergeTree variant prefixed with `Replicated` — parts sync via CH Keeper],
+      [`Distributed`], [Virtual fan-out table: routes reads and writes across shards transparently],
+      [`Buffer`], [Absorbs insert spikes in memory; flushes to a target table on size or time threshold],
+    )
+  ],
+
+  [
+    #text(weight: "bold", fill: rgb("#B5303B"))[External integrations]
+    #v(0.2em)
+    #table(
+      columns: (auto, 1fr),
+      stroke: none,
+      inset: (x: 0pt, y: 3pt),
+      [`Kafka`], [Consume from or produce to Kafka topics — pairs with a `Null` + MV pattern],
+      [`S3` / `S3Queue`], [Read S3 objects directly; `S3Queue` ingests new files as they land],
+      [`URL`], [Read from any HTTP endpoint as a table],
+      [`PostgreSQL` / `JDBC`], [Foreign data wrappers — query external SQL databases in-place],
+      [`Delta` / `Iceberg`], [Read lakehouse table formats without copying data into ClickHouse],
+    )
+  ],
+
+  [
+    #text(weight: "bold", fill: rgb("#B5303B"))[Dictionaries & views]
+    #v(0.2em)
+    #table(
+      columns: (auto, 1fr),
+      stroke: none,
+      inset: (x: 0pt, y: 3pt),
+      [`Dictionary`], [In-memory key-value lookup table — for fast enrichment joins at query time],
+      [`MaterializedView`], [Trigger on insert that writes aggregated results to a target table],
+    )
+  ],
+)
