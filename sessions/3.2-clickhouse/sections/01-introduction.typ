@@ -145,67 +145,62 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
 
 A single ClickHouse node scales to tens of terabytes and is the right starting point for most teams. Replication adds fault-tolerance; sharding adds horizontal scale — both require CH Keeper for coordination.
 
-== Engine ecosystem
+== Protocols
 
-The *engine* is part of the schema declaration. It defines not just how data is stored but whether it is local, replicated, routed, buffered, or pulled from an external system.
+#align(center,
+  grid(
+    columns: (1fr, 1fr),
+    column-gutter: 1.4cm,
+    align: top,
 
-#grid(
-  columns: (1fr, 1fr),
-  column-gutter: 1.2cm,
-  row-gutter: 0.6em,
-  align: top,
+    [
+      #text(weight: "bold")[Native binary protocol — port 9000]
+      #v(0.5em)
+      ClickHouse's own TCP protocol. Used by `clickhouse-client` and native language drivers (Python `clickhouse-driver`, Go `clickhouse-go`, C++).
 
-  [
-    #text(weight: "bold", fill: rgb("#B5303B"))[Local storage]
-    #v(0.2em)
-    #table(
-      columns: (auto, 1fr),
-      stroke: none,
-      inset: (x: 0pt, y: 3pt),
-      [`MergeTree` family], [Sorted columnar parts, background merges — the primary analytics engine],
-      [`Log` / `TinyLog`], [Append-only, no index — lightweight staging or temp tables],
-      [`Memory`], [In-memory, lost on restart — fast lookups and small working sets],
-      [`Null`], [Discards all data — useful as a materialized view source without storing raw events],
-    )
-  ],
+      #v(0.4em)
+      - Columnar wire format — data transferred column-by-column without row conversion
+      - Transparent LZ4 or ZSTD compression over the wire
+      - Streaming: rows returned as they are computed, no buffering until completion
+      - Supports progress callbacks, query cancellation, and server-side settings
+      - *Use for production pipelines and data-intensive clients*
 
-  [
-    #text(weight: "bold", fill: rgb("#B5303B"))[Distribution & buffering]
-    #v(0.2em)
-    #table(
-      columns: (auto, 1fr),
-      stroke: none,
-      inset: (x: 0pt, y: 3pt),
-      [`ReplicatedMergeTree`], [Any MergeTree variant prefixed with `Replicated` — parts sync via CH Keeper],
-      [`Distributed`], [Virtual fan-out table: routes reads and writes across shards transparently],
-      [`Buffer`], [Absorbs insert spikes in memory; flushes to a target table on size or time threshold],
-    )
-  ],
+      #v(0.6em)
+      ```
+      clickhouse-client \
+        --host ch.example.com \
+        --query "SELECT count() FROM trips"
+      ```
+    ],
 
-  [
-    #text(weight: "bold", fill: rgb("#B5303B"))[External integrations]
-    #v(0.2em)
-    #table(
-      columns: (auto, 1fr),
-      stroke: none,
-      inset: (x: 0pt, y: 3pt),
-      [`Kafka`], [Consume from or produce to Kafka topics — pairs with a `Null` + MV pattern],
-      [`S3` / `S3Queue`], [Read S3 objects directly; `S3Queue` ingests new files as they land],
-      [`URL`], [Read from any HTTP endpoint as a table],
-      [`PostgreSQL` / `JDBC`], [Foreign data wrappers — query external SQL databases in-place],
-      [`Delta` / `Iceberg`], [Read lakehouse table formats without copying data into ClickHouse],
-    )
-  ],
+    [
+      #text(weight: "bold")[HTTP interface — port 8123]
+      #v(0.5em)
+      Plain HTTP/1.1. Any tool that speaks HTTP — `curl`, BI tools, monitoring agents, web apps — can query ClickHouse without a dedicated driver.
 
-  [
-    #text(weight: "bold", fill: rgb("#B5303B"))[Dictionaries & views]
-    #v(0.2em)
-    #table(
-      columns: (auto, 1fr),
-      stroke: none,
-      inset: (x: 0pt, y: 3pt),
-      [`Dictionary`], [In-memory key-value lookup table — for fast enrichment joins at query time],
-      [`MaterializedView`], [Trigger on insert that writes aggregated results to a target table],
-    )
-  ],
+      #v(0.4em)
+      - Format negotiated via `FORMAT` clause or `Content-Type`: JSON, CSV, TSV, Parquet, Arrow, …
+      - `GET` for small queries; `POST` body for larger queries and bulk inserts
+      - Stateless: no persistent connection required
+      - HTTPS available; compatible with load balancers and API gateways
+      - *Use for ad-hoc access, BI integrations, and HTTP-native stacks*
+
+      #v(0.6em)
+      ```
+      # Query
+      curl "http://localhost:8123/?query=SELECT+count()+FROM+trips"
+
+      # Bulk insert from stdin
+      cat data.csv | curl "http://localhost:8123/" \
+        --data-binary @- \
+        --get \
+        --data-urlencode "query=INSERT INTO trips FORMAT CSV"
+      ```
+    ],
+  )
 )
+
+#v(0.6em)
+
+ClickHouse also speaks the *MySQL wire protocol* (port 9004) — meaning any MySQL-compatible client or BI tool connects without a custom driver. Arrow Flight SQL (gRPC, port 9100) enables zero-copy columnar transfers for tools built on Apache Arrow.
+
