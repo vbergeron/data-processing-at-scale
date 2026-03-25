@@ -4,13 +4,15 @@
 
 ClickHouse's primary storage engine. The name is literal: data is written in sorted, immutable *parts*, and a background process continuously *merges* them.
 
-Every engine in the family — `ReplacingMergeTree`, `AggregatingMergeTree`, `CollapsingMergeTree` — is `MergeTree` with a specific behavior plugged into the merge step.
+== MergeTree and LSM trees
 
-#v(0.6em)
+*MergeTrees* shares core ideas with *LSM trees* (RocksDB, Cassandra, LevelDB).
+- writes are cheap because they are sequential appends, 
+- reads amortize the cost of background compaction. 
 
-*Relationship to LSM trees*
-
-MergeTree shares the core idea with Log-Structured Merge trees (used in RocksDB, Cassandra, LevelDB): writes are cheap because they are sequential appends, and reads amortize the cost of background compaction. The key difference is that MergeTree is *column-oriented* — each part stores data column-by-column rather than row-by-row — and compaction is driven by *analytical query patterns* (sort order, aggregation state) rather than by key range maintenance.
+Key differences: 
+- *column-oriented* — each part stores data column-by-column
+- compaction is driven by *analytical query patterns* (sort order, aggregation state)
 
 == The write path
 
@@ -58,8 +60,6 @@ ORDER BY (ts, user_id);
 
 == The engine family
 
-The engine defines what happens *during a merge*. All engines share the same columnar storage and sparse index.
-
 #table(
   columns: (1fr, 1fr),
   [*Engine*], [*Merge behavior*],
@@ -69,10 +69,9 @@ The engine defines what happens *during a merge*. All engines share the same col
   [`VersionedCollapsingMergeTree`], [Same as Collapsing, but safe with out-of-order data],
   [`AggregatingMergeTree`], [Merges intermediate aggregation states — backbone of materialized views],
   [`SummingMergeTree`], [Sums numeric columns on merge — lightweight pre-aggregation],
-  [`GraphiteMergeTree`], [Time-series retention and rollup (Graphite protocol)],
 )
 
-== ReplacingMergeTree — the common pitfall
+== ReplacingMergeTree and Eventual Consistency
 
 `ReplacingMergeTree` deduplicates rows with the same primary key, keeping the row with the highest version (or the last inserted if no version column).
 
@@ -87,8 +86,8 @@ ORDER BY user_id;
 
 *Deduplication is asynchronous.* Merges happen in the background — a query may still return duplicates until a merge has run.
 
+== ReplacingMergeTree and Eventual Consistency
+
 Two patterns to handle this:
 - `SELECT … FINAL` — forces deduplication at query time; correct but up to 2× slower
 - `argMax(name, version)` — pick the latest value in the application layer; fast, no `FINAL` needed
-
-`FINAL` is fine for low-frequency or dashboard queries; avoid it on hot paths.

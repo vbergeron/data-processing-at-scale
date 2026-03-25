@@ -2,26 +2,38 @@
 
 == Columnar layout on disk
 
-Each part is a directory. Every column gets its own files — `column.bin` (compressed data) and `column.mrk3` (marks linking the index to byte offsets).
+Each part is a directory. Every column gets its own pair of files: `column.bin` holds the compressed data; `column.mrk3` holds the *marks* — byte offsets into `.bin` that let ClickHouse seek directly to any granule without scanning from the start.
 
 #align(center,
   grid(
-    columns: (auto, auto, auto, auto),
-    column-gutter: 0.6cm,
+    columns: (auto, auto, auto, auto, auto, auto, auto),
+    column-gutter: 0.4cm,
     align: top + center,
-    rect(fill: rgb("#e3f2fd"), inset: 10pt)[
+    rect(fill: rgb("#e3f2fd"), inset: 8pt)[
       `ts.bin` \
-      #text(size: 9pt, fill: luma(120))[timestamps only]
+      #text(size: 9pt, fill: luma(120))[data]
     ],
-    rect(fill: rgb("#e3f2fd"), inset: 10pt)[
-      `user_id.bin` \
-      #text(size: 9pt, fill: luma(120))[user ids only]
+    rect(fill: rgb("#dceefb"), inset: 8pt)[
+      `ts.mrk3` \
+      #text(size: 9pt, fill: luma(120))[offsets]
     ],
-    rect(fill: rgb("#e3f2fd"), inset: 10pt)[
+    rect(fill: rgb("#e3f2fd"), inset: 8pt)[
       `amount.bin` \
-      #text(size: 9pt, fill: luma(120))[amounts only]
+      #text(size: 9pt, fill: luma(120))[data]
     ],
-    rect(fill: rgb("#fff3e0"), inset: 10pt)[
+    rect(fill: rgb("#dceefb"), inset: 8pt)[
+      `amount.mrk3` \
+      #text(size: 9pt, fill: luma(120))[offsets]
+    ],
+    rect(fill: rgb("#e3f2fd"), inset: 8pt)[
+      `user_id.bin` \
+      #text(size: 9pt, fill: luma(120))[data]
+    ],
+    rect(fill: rgb("#dceefb"), inset: 8pt)[
+      `user_id.mrk3` \
+      #text(size: 9pt, fill: luma(120))[offsets]
+    ],
+    rect(fill: rgb("#fff3e0"), inset: 8pt)[
       `primary.idx` \
       #text(size: 9pt, fill: luma(120))[sparse index]
     ],
@@ -30,7 +42,7 @@ Each part is a directory. Every column gets its own files — `column.bin` (comp
 
 #v(0.8em)
 
-A query `SELECT sum(amount) WHERE ts > yesterday()` reads only `ts.bin` and `amount.bin`. The `user_id` column is never touched. On a wide table with 50 columns, this is a 25–50× reduction in I/O before any filtering.
+A query `SELECT sum(amount) WHERE ts > yesterday()` reads only `ts.bin`, `ts.mrk3`, and `amount.bin`. `user_id` is never opened. On a 50-column table this is a 25–50× reduction in I/O before any filtering.
 
 == Compression and encoding
 
