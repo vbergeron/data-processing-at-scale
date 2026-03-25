@@ -147,60 +147,12 @@ A single ClickHouse node scales to tens of terabytes and is the right starting p
 
 == Protocols
 
-#align(center,
-  grid(
-    columns: (1fr, 1fr),
-    column-gutter: 1.4cm,
-    align: top,
-
-    [
-      #text(weight: "bold")[Native binary protocol — port 9000]
-      #v(0.5em)
-      ClickHouse's own TCP protocol. Used by `clickhouse-client` and native language drivers (Python `clickhouse-driver`, Go `clickhouse-go`, C++).
-
-      #v(0.4em)
-      - Columnar wire format — data transferred column-by-column without row conversion
-      - Transparent LZ4 or ZSTD compression over the wire
-      - Streaming: rows returned as they are computed, no buffering until completion
-      - Supports progress callbacks, query cancellation, and server-side settings
-      - *Use for production pipelines and data-intensive clients*
-
-      #v(0.6em)
-      ```
-      clickhouse-client \
-        --host ch.example.com \
-        --query "SELECT count() FROM trips"
-      ```
-    ],
-
-    [
-      #text(weight: "bold")[HTTP interface — port 8123]
-      #v(0.5em)
-      Plain HTTP/1.1. Any tool that speaks HTTP — `curl`, BI tools, monitoring agents, web apps — can query ClickHouse without a dedicated driver.
-
-      #v(0.4em)
-      - Format negotiated via `FORMAT` clause or `Content-Type`: JSON, CSV, TSV, Parquet, Arrow, …
-      - `GET` for small queries; `POST` body for larger queries and bulk inserts
-      - Stateless: no persistent connection required
-      - HTTPS available; compatible with load balancers and API gateways
-      - *Use for ad-hoc access, BI integrations, and HTTP-native stacks*
-
-      #v(0.6em)
-      ```
-      # Query
-      curl "http://localhost:8123/?query=SELECT+count()+FROM+trips"
-
-      # Bulk insert from stdin
-      cat data.csv | curl "http://localhost:8123/" \
-        --data-binary @- \
-        --get \
-        --data-urlencode "query=INSERT INTO trips FORMAT CSV"
-      ```
-    ],
-  )
+#table(
+  columns: (auto, auto, 1fr),
+  [*Protocol*], [*Port*], [*Notes*],
+  [Native binary], [9000], [ClickHouse's own TCP protocol — columnar wire, LZ4/ZSTD, streaming, progress callbacks. Used by `clickhouse-client` and native drivers],
+  [HTTP],          [8123], [Plain HTTP/1.1 — format negotiated via `FORMAT` clause (JSON, CSV, Parquet, Arrow…). Any `curl` or BI tool works out of the box],
+  [MySQL wire],    [9004], [MySQL protocol compatibility — connect any MySQL-compatible client or BI tool without a ClickHouse-specific driver],
+  [Arrow Flight SQL], [9100], [gRPC + Apache Arrow — zero-copy columnar transfers for tools built on the Arrow ecosystem (Pandas, Polars, DuckDB)],
 )
-
-#v(0.6em)
-
-ClickHouse also speaks the *MySQL wire protocol* (port 9004) — meaning any MySQL-compatible client or BI tool connects without a custom driver. Arrow Flight SQL (gRPC, port 9100) enables zero-copy columnar transfers for tools built on Apache Arrow.
 
