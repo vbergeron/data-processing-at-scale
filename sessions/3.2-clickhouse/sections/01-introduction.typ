@@ -78,57 +78,92 @@ ClickHouse started as an internal tool for one specific problem — aggregating 
 
 == Topology & deployment
 
-#align(center,
-  grid(
-    columns: (1fr, 1fr, 1fr),
-    column-gutter: 1.2cm,
-    align: top + center,
-    [
-      #rect(fill: rgb("#e8f5e9"), inset: 12pt, radius: 4pt, width: 100%)[
-        #text(weight: "bold")[Single node] \
-        #v(0.4em)
-        #text(size: 9pt, fill: luma(80))[
-          One process. \
-          No coordination overhead. \
-          Scales to *tens of TB* on a single machine. \
-          `clickhouse local` or `clickhouse server`.
-        ]
-      ]
-      #v(0.5em)
-      #text(size: 9pt)[
-        *The right choice for most teams.* \
-        A single ClickHouse node saturates a 100 Gbps NIC before running out of CPU.
-      ]
-    ],
-    [
-      #rect(fill: rgb("#fff3e0"), inset: 12pt, radius: 4pt, width: 100%)[
-        #text(weight: "bold")[Replicated] \
-        #v(0.4em)
-        #text(size: 9pt, fill: luma(80))[
-          2–3 nodes + ClickHouse Keeper. \
-          `ReplicatedMergeTree` — parts sync at the part level. \
-          High availability, no data loss on one failure.
-        ]
-      ]
-      #v(0.5em)
-      #text(size: 9pt)[Suitable when uptime matters more than raw throughput.]
-    ],
-    [
-      #rect(fill: rgb("#fce4ec"), inset: 12pt, radius: 4pt, width: 100%)[
-        #text(weight: "bold")[Sharded cluster] \
-        #v(0.4em)
-        #text(size: 9pt, fill: luma(80))[
-          N shards × M replicas. \
-          `Distributed` table fans out reads and writes. \
-          Scales to petabytes and millions of events/s.
-        ]
-      ]
-      #v(0.5em)
-      #text(size: 9pt)[Cloudflare, ByteDance, Yandex scale — not day-one architecture.]
-    ],
-  )
+#let ch(pos) = node(pos, text(size: 8pt)[CH], fill: white, stroke: 0.6pt, width: 0.9cm, inset: 5pt, corner-radius: 3pt)
+#let keeper(pos) = node(pos, text(size: 7pt)[Keeper], fill: luma(240), stroke: 0.5pt + luma(160), width: 1.0cm, inset: 4pt, corner-radius: 3pt)
+#let dist(pos) = node(pos, text(size: 7pt)[Distributed], fill: rgb("#fce4ec"), stroke: 0.6pt, width: 1.6cm, inset: 4pt, corner-radius: 3pt)
+
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  column-gutter: 1cm,
+  align: top,
+
+  rect(fill: rgb("#e8f5e9"), inset: 10pt, radius: 4pt, width: 100%)[
+    #text(weight: "bold")[Standalone]
+    #v(0.5em)
+    #align(center, block(height: 2.2cm,
+      align(center + horizon,
+        fletcher.diagram(
+          spacing: (1.2cm, 0.8cm),
+          node-stroke: 0.6pt,
+          node-corner-radius: 3pt,
+          node((0,0), text(size: 8pt)[CH server], fill: white, width: 2cm, inset: 7pt),
+        )
+      )
+    ))
+    #v(0.3em)
+    #text(size: 9pt, fill: luma(50))[
+      - One process, no coordination
+      - `clickhouse local` or server
+      - Tens of TB on one machine
+      - *Right choice for most teams*
+    ]
+  ],
+
+  rect(fill: rgb("#fff3e0"), inset: 10pt, radius: 4pt, width: 100%)[
+    #text(weight: "bold")[Replicated]
+    #v(0.5em)
+    #align(center, block(height: 2.2cm,
+      align(center + horizon,
+        fletcher.diagram(
+          spacing: (1.4cm, 0.8cm),
+          node-stroke: 0.6pt,
+          node-corner-radius: 3pt,
+          ch((0,0)), ch((2,0)), keeper((1,1)),
+          edge((0,0),(2,0), "<->", label: text(size: 7pt)[parts], label-pos: 0.5),
+          edge((0,0),(1,1), "->"),
+          edge((2,0),(1,1), "->"),
+        )
+      )
+    ))
+    #v(0.3em)
+    #text(size: 9pt, fill: luma(50))[
+      - 2–3 CH nodes + CH Keeper
+      - Parts sync at the part level
+      - Survives one node failure
+      - Same query interface as standalone
+    ]
+  ],
+
+  rect(fill: rgb("#fce4ec"), inset: 10pt, radius: 4pt, width: 100%)[
+    #text(weight: "bold")[Sharded cluster]
+    #v(0.5em)
+    #align(center, block(height: 2.2cm,
+      align(center + horizon,
+        fletcher.diagram(
+          spacing: (1.1cm, 0.8cm),
+          node-stroke: 0.6pt,
+          node-corner-radius: 3pt,
+          dist((1.5, 0)),
+          ch((0,1)), ch((1,1)), ch((2,1)), ch((3,1)),
+          edge((1.5,0),(0,1), "->"),
+          edge((1.5,0),(1,1), "->"),
+          edge((1.5,0),(2,1), "->"),
+          edge((1.5,0),(3,1), "->"),
+          edge((0,1),(1,1), "<->"),
+          edge((2,1),(3,1), "<->"),
+        )
+      )
+    ))
+    #v(0.3em)
+    #text(size: 9pt, fill: luma(50))[
+      - N shards × M replicas + Keeper
+      - `Distributed` table fans out queries
+      - Petabytes, millions of events/s
+      - Cloudflare / ByteDance scale
+    ]
+  ],
 )
 
 #v(0.6em)
 
-The single-node topology is not a compromise — it is the recommended starting point. ClickHouse is designed so that one well-specced machine outperforms a Spark cluster for OLAP workloads. Add sharding only when a single machine's disk or I/O is genuinely the bottleneck.
+The single-node topology is not a compromise — it is the recommended starting point. A single well-specced ClickHouse machine routinely outperforms multi-node Spark clusters on OLAP workloads. Add sharding only when disk or I/O on one machine is genuinely the bottleneck.
