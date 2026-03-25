@@ -2,4 +2,10 @@
 
 #show: dpas-theme.with(title: [3.2 — ClickHouse: Real-Time Analytics at Scale], day: [Day 3], slug: "3.2-clickhouse", lab: "3.2-clickhouse")
 
-#include "sections/01-content.typ"
+#include "sections/01-why-olap.typ"
+#include "sections/02-engines.typ"
+#include "sections/03-storage.typ"
+#include "sections/04-queries.typ"
+#include "sections/05-materialized-views.typ"
+#include "sections/06-interop.typ"
+#include "sections/07-vocabulary.typ"
