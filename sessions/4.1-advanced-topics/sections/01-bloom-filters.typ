@@ -1,26 +1,62 @@
+
 = Bloom Filters
 
 == The membership problem
 
 Given a large set $S$, answer *"is x in S?"* — as fast and as cheaply as possible.
 
-The naive answer is a hash set: exact, but memory grows linearly with $|S|$.
+== The naive answer
 
-For a billion URLs, a hash set costs ~8 GB. A Bloom filter answers the same question in *~1.2 GB with a 1% false positive rate* — and in $O(k)$ time regardless of set size.
+- linear search : compute is O(|S|), space is O(|S|)
+- binary search (hash set) : compute is O(log |S|), space is O(|S|).
 
-The trade-off: Bloom filters can return *false positives* (claim an element is present when it is not), but they *never return false negatives*. A "no" is always correct. A "yes" might be wrong.
+== \
+
+What if we trade accuracy for space?
+
+== Bloom filters
+
+A probabilistic data structure that answers the membership question.
+
+- O(1) in time
+- O(K < N) (*sub-linear*) space. 
+
+Bloom filters can return *false positives* (claim an element is present when it is not), but they *never return false negatives*.
 
 == The data structure
 
-A Bloom filter is a *bit array* of $m$ bits, initially all zero, and $k$ independent hash functions $h_1, ..., h_k$ each mapping an element to $[0, m)$.
+A Bloom filter is :
+- a *bit array* $B$ of $m$ bits, initially all zero
+- $k$ independent hash functions $h_1, ..., h_k$ each mapping an element to $[0, m)$.
 
-*Insert* $x$: set bits $h_1(x), h_2(x), ..., h_k(x)$ to 1.
+== Efficient hashes computation
 
-*Query* $x$: return true if *all* of $h_1(x), ..., h_k(x)$ are 1.
+Small interpolation trick, given only two hash functions $h_A$ and $h_B$:
+$ h_i(x) = (h_A(x) + i * h_B(x)) mod m $
 
-A false positive occurs when all $k$ positions happen to be set by *other* elements. There are no false negatives because insertion always sets all $k$ bits.
+== Insert $x$
 
-*Deletion is not supported* — clearing a bit might unset it for another element that shares that position.
+Insert is : $"foreach" i "in" [0, k), B[h_i(x)] := 1$
+
+== Query $x$
+
+Query is : $"forall" i "in" [0, k), B[h_i(x)] = 1$
+
+== False positives
+
+A false positive occurs when all $k$ positions happen to be set by *other* elements. \
+There are no false negatives because insertion always sets all $k$ bits.
+
+#align(center,
+  image("../assets/Bloom_filter.svg.png", width: 90%)
+)
+
+== Other nice features
+
+- *Deletion is not supported* — clearing a bit might unset it for another element that shares that position.
+- if $m$ and $h_i$ are the same for both filters
+  - $B_1 union B_2$ is given by bitwise OR
+  - $B_1 inter B_2$ is given by bitwise AND
 
 == Tuning: the false positive rate
 
@@ -44,9 +80,6 @@ $ k = (m / n) ln 2 $
   [Apache Cassandra], [Each SSTable has a Bloom filter — skip reading the file entirely if the key is definitely absent],
   [Apache Parquet], [Row group Bloom filters — added in 2.0; skip entire row groups in predicate pushdown],
   [ClickHouse], [`bloom_filter` skip index — prune granules that cannot match a `WHERE` condition],
-  [PostgreSQL], [Not built-in, but used in `pg_bloom` extension for large join deduplication],
-  [CDN / Web caches], [Check whether a URL has been seen before fetching from origin],
-  [Chrome Safe Browsing], [Local Bloom filter of malicious URLs — avoid a round-trip for every link clicked],
 )
 
 == Variants
