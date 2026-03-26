@@ -108,7 +108,6 @@
   - Differential dataflow: processing only the deltas
   - Monotonic vs non-monotonic operators and connection to CALM
   - Applications: materialized views, incremental ETL, live dashboards
-- **Demo:** [Probabilistic data structures — exact vs approximate](labs/4.1-advanced-topics/main.typ)
 
 **4.2 — Project Briefing**
 

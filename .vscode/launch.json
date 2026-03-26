@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "scala",
+      "request": "launch",
+      "name": "generatePrices",
+      "mainClass": "generatePrices",
+      "buildTarget": "file:/home/vbergeron/perso/data-processing-at-scale/.scala-build/?id=data-processing-at-scale_bd2c96d2de-5ca3484bdc",
+      "args": [],
+      "jvmOptions": [],
+      "env": {}
+    }
+  ]
+}
