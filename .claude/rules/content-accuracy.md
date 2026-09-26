@@ -1,8 +1,3 @@
----
-description: Accuracy standards for technical claims in course content — what to verify and how to flag uncertainty
-alwaysApply: true
----
-
 # Content Accuracy
 
 ## Verify before stating

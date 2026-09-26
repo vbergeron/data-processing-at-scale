@@ -1,7 +1,6 @@
 ---
-description: Pedagogical guidelines for slide content and session design
-globs: sessions/*.typ
-alwaysApply: false
+paths:
+  - "sessions/**/*.typ"
 ---
 
 # Slide Content & Pedagogy

@@ -1,7 +1,6 @@
 ---
-description: Rules for composing and formatting Touying/Typst slides
-globs: sessions/*.typ
-alwaysApply: false
+paths:
+  - "sessions/**/*.typ"
 ---
 
 # Slide Composition

@@ -59,7 +59,8 @@ sessions/                       Slide decks (one folder per session)
   ...
   4.2-project-briefing/
 
-.cursor/rules/                  Authoring guidelines (slide pedagogy, composition, lab writing, accuracy)
+CLAUDE.md                       Instructions for Claude Code (layout, conventions, build)
+.claude/rules/                  Authoring guidelines (slide pedagogy, composition, lab writing, accuracy)
 
 build/                          Compiled output (git-ignored)
 ```
@@ -118,4 +119,4 @@ See [context/SESSIONS.md](context/SESSIONS.md) for the detailed syllabus and lea
 - Assets are per-session — don't cross-reference between sessions.
 - When adding a session or lab, also add it to `index.html`, this README and `context/SESSIONS.md`.
 - With `make watch` running, save a `.typ` file and the PDF rebuilds automatically.
-- The full authoring guidelines live in `.cursor/rules/`.
+- The full authoring guidelines live in `CLAUDE.md` and `.claude/rules/`.

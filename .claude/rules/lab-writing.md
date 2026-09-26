@@ -1,7 +1,6 @@
 ---
-description: Standards for writing student lab handouts — tone, setup, dependencies, and structure
-globs: labs/**/*.typ
-alwaysApply: false
+paths:
+  - "labs/**/*.typ"
 ---
 
 # Lab Writing
