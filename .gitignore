@@ -3,3 +3,6 @@ build/
 .bsp/
 .metals/
 .scala-build/
+
+# Lab generator output when run from the repo root
+/data/
