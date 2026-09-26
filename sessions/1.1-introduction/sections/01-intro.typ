@@ -1,6 +1,6 @@
 == Who am I?
 
-- *Valentin Bergeron* — Engineering Manager & Tech Lead @ Ledger
+- *Valentin Bergeron* — Engineering Manager & Tech Lead \@ Ledger
 - Worked in AdTech / CRM with high volume
 - What I care about
   - Building data intensive applications
