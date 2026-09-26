@@ -1,7 +1,7 @@
 # Project 30 — Global Weather Correlation Pipeline
 
 **Extends:** Sessions 2.2 (Spark & query execution), 1.4 (data modeling), 2.1 (file formats)  
-**Dataset:** [NOAA Global Surface Summary](../DATASETS.md#noaa-global-surface-summary-of-the-day)  
+**Dataset:** [NOAA Global Surface Summary](../context/DATASETS.md#noaa-global-surface-summary-of-the-day)  
 **Stack:** PySpark, Parquet
 
 ## Context

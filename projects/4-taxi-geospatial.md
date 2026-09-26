@@ -1,7 +1,7 @@
 # Project 4 — NYC Taxi Fare Anomaly Detection
 
 **Extends:** Sessions 3.4 (ClickHouse), 4.1 (probabilistic structures), 1.4 (data modeling)  
-**Dataset:** [NYC TLC Trip Record Data](../DATASETS.md#nyc-tlc-trip-record-data)  
+**Dataset:** [NYC TLC Trip Record Data](../context/DATASETS.md#nyc-tlc-trip-record-data)  
 **Stack:** ClickHouse, Python
 
 ## Context

@@ -100,7 +100,7 @@
 #table(
   columns: 3,
   align: (left, right, right),
-  table.header([*Operation*], [*Latency*], [*CPU cycles @ 3 GHz*]),
+  table.header([*Operation*], [*Latency*], [*CPU cycles \@ 3 GHz*]),
   [L1 cache reference], [1 ns], [3],
   [RAM access], [100 ns], [300],
   [SSD random read], [100 μs], [300 000],

@@ -1,7 +1,7 @@
 # Project 13 — Decoded On-Chain Analytics
 
 **Extends:** Sessions 3.4 (ClickHouse), 1.4 (data modeling), 2.1 (storage formats)  
-**Dataset:** [Ethereum](../DATASETS.md#ethereum-public-dataset-blockchain-etl) + [Sourcify](../DATASETS.md#sourcify-verified-smart-contracts)  
+**Dataset:** [Ethereum](../context/DATASETS.md#ethereum-public-dataset-blockchain-etl) + [Sourcify](../context/DATASETS.md#sourcify-verified-smart-contracts)  
 **Stack:** ClickHouse, Python
 
 ## Context

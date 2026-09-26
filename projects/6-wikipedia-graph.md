@@ -1,7 +1,7 @@
 # Project 6 — Wikipedia Knowledge Graph Evolution
 
 **Extends:** Sessions 4.2 (differential dataflow), 3.3 (CALM, lattices)  
-**Dataset:** [Wikimedia EventStreams](../DATASETS.md#wikimedia-eventstreams)  
+**Dataset:** [Wikimedia EventStreams](../context/DATASETS.md#wikimedia-eventstreams)  
 **Stack:** Python, PostgreSQL or DuckDB
 
 ## Context

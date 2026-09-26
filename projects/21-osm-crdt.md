@@ -1,7 +1,7 @@
 # Project 21 — OpenStreetMap Collaborative Edit Analysis
 
 **Extends:** Sessions 3.3 (CALM, lattices, CRDTs), 4.2 (incremental computation)  
-**Dataset:** [OpenStreetMap Changesets](../DATASETS.md#openstreetmap-changesets)  
+**Dataset:** [OpenStreetMap Changesets](../context/DATASETS.md#openstreetmap-changesets)  
 **Stack:** Python, PostgreSQL or DuckDB
 
 ## Context

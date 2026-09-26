@@ -1,7 +1,7 @@
 # Project 9 — Global News Event Tracking with Probabilistic Structures
 
 **Extends:** Sessions 4.1 (probabilistic data structures), 3.4 (ClickHouse), 2.1 (storage formats)  
-**Dataset:** [GDELT Project](../DATASETS.md#gdelt-project)  
+**Dataset:** [GDELT Project](../context/DATASETS.md#gdelt-project)  
 **Stack:** Python, ClickHouse, (optionally Kafka for ingestion)
 
 ## Context

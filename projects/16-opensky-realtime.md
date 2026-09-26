@@ -1,7 +1,7 @@
 # Project 16 — Flight Diversion & Anomaly Detection
 
 **Extends:** Sessions 3.1 (Flink), 3.2 (windowed aggregations), 3.4 (ClickHouse)  
-**Dataset:** [OpenSky Network](../DATASETS.md#opensky-network)  
+**Dataset:** [OpenSky Network](../context/DATASETS.md#opensky-network)  
 **Stack:** Kafka, Flink, ClickHouse
 
 ## Context

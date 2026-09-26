@@ -1,7 +1,7 @@
 # Project 12 — Financial Statement Pipeline
 
 **Extends:** Sessions 2.2 (Spark & query execution), 1.4 (data modeling), 2.1 (file formats)  
-**Dataset:** [US Stock Market + SEC EDGAR](../DATASETS.md#kaggle-finance--us-stock-market-daily--intraday)  
+**Dataset:** [US Stock Market + SEC EDGAR](../context/DATASETS.md#kaggle-finance--us-stock-market-daily--intraday)  
 **Stack:** PySpark, Parquet
 
 ## Context

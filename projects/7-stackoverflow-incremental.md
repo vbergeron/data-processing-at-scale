@@ -1,7 +1,7 @@
 # Project 7 — Stack Overflow Incremental Analytics
 
 **Extends:** Sessions 4.2 (differential dataflow), 3.3 (CALM theorem, lattices), 1.4 (data modeling)  
-**Dataset:** [Stack Exchange Data Dump](../DATASETS.md#stack-exchange-data-dump)  
+**Dataset:** [Stack Exchange Data Dump](../context/DATASETS.md#stack-exchange-data-dump)  
 **Stack:** Python, PostgreSQL or DuckDB, (optionally Materialize or a custom incremental engine)
 
 ## Context

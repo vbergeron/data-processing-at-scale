@@ -1,7 +1,7 @@
 # Project 10 — Geopolitical Escalation Early Warning
 
 **Extends:** Sessions 3.1 (Flink), 3.2 (windowed aggregations), 3.4 (ClickHouse)  
-**Dataset:** [GDELT Project](../DATASETS.md#gdelt-project)  
+**Dataset:** [GDELT Project](../context/DATASETS.md#gdelt-project)  
 **Stack:** Kafka, Flink, ClickHouse
 
 ## Context

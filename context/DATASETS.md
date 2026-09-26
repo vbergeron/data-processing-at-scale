@@ -12,7 +12,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 1 week to 1 month of data (~5–15 GB compressed).
 - **Format:** Newline-delimited JSON (`.json.gz`)
 - **Access:** Direct HTTP download, one file per hour: `https://data.gharchive.org/2024-01-01-0.json.gz`
-- **Used in:** [Project 1 — GitHub Event Analytics](projects/1-github-analytics.md), [Project 2 — Open Source Health Metrics](projects/2-github-health.md)
+- **Used in:** [Project 1 — GitHub Event Analytics](../projects/1-github-analytics.md), [Project 2 — Open Source Health Metrics](../projects/2-github-health.md)
 
 ---
 
@@ -24,7 +24,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 6–12 months of yellow taxi data (~10–20 GB Parquet).
 - **Format:** Parquet
 - **Access:** Direct HTTP download from the NYC open data portal.
-- **Used in:** [Project 3 — Taxi Trip Batch Processing](projects/3-taxi-spark.md), [Project 4 — Geospatial Demand Analytics](projects/4-taxi-geospatial.md)
+- **Used in:** [Project 3 — Taxi Trip Batch Processing](../projects/3-taxi-spark.md), [Project 4 — Geospatial Demand Analytics](../projects/4-taxi-geospatial.md)
 
 ---
 
@@ -37,7 +37,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended approach:** Record 24–48h of events to a file for reproducible processing (~2–5 GB).
 - **Format:** SSE with JSON payloads
 - **Access:** Open SSE endpoint, no authentication. Also available via Kafka: `kafka.wikimedia.org`
-- **Used in:** [Project 5 — Wikipedia Edit Stream Processing](projects/5-wikipedia-streaming.md), [Project 6 — Knowledge Graph Evolution](projects/6-wikipedia-graph.md)
+- **Used in:** [Project 5 — Wikipedia Edit Stream Processing](../projects/5-wikipedia-streaming.md), [Project 6 — Knowledge Graph Evolution](../projects/6-wikipedia-graph.md)
 
 ---
 
@@ -49,7 +49,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Stack Overflow Posts + Votes + Users (~20 GB uncompressed) or a smaller site for faster iteration.
 - **Format:** 7z-compressed XML files
 - **Access:** Free download from Internet Archive.
-- **Used in:** [Project 7 — Stack Overflow Incremental Analytics](projects/7-stackoverflow-incremental.md), [Project 8 — Distributed Faceted Search with Embedded Lucene](projects/8-stackoverflow-expertise.md)
+- **Used in:** [Project 7 — Stack Overflow Incremental Analytics](../projects/7-stackoverflow-incremental.md), [Project 8 — Distributed Faceted Search with Embedded Lucene](../projects/8-stackoverflow-expertise.md)
 
 ---
 
@@ -62,7 +62,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 1–3 months of GDELT 2.0 events (~15–45 GB CSV).
 - **Format:** Tab-separated CSV, zipped
 - **Access:** Direct HTTP download, files updated every 15 minutes.
-- **Used in:** [Project 9 — Global News Event Tracking](projects/9-gdelt-probabilistic.md), [Project 10 — Geopolitical Event Streaming](projects/10-gdelt-streaming.md)
+- **Used in:** [Project 9 — Global News Event Tracking](../projects/9-gdelt-probabilistic.md), [Project 10 — Geopolitical Event Streaming](../projects/10-gdelt-streaming.md)
 
 ---
 
@@ -76,7 +76,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Full daily OHLCV history + 2–3 years of SEC filings (~10–15 GB combined).
 - **Format:** CSV
 - **Access:** Free download from Kaggle (account required) or SEC EDGAR (no auth).
-- **Used in:** [Project 11 — Stock Market Time-Series Analytics](projects/11-stocks-timeseries.md), [Project 12 — Financial Statement Pipeline](projects/12-stocks-fundamentals.md)
+- **Used in:** [Project 11 — Stock Market Time-Series Analytics](../projects/11-stocks-timeseries.md), [Project 12 — Financial Statement Pipeline](../projects/12-stocks-fundamentals.md)
 
 ---
 
@@ -89,7 +89,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 3–6 months of transactions + token transfers (~10–20 GB).
 - **Format:** CSV or Parquet (via `ethereum-etl` CLI export)
 - **Access:** Free export via `ethereum-etl` CLI against a public node, or direct BigQuery queries (free tier: 1 TB/month).
-- **Used in:** [Project 13 — Decoded On-Chain Analytics](projects/13-ethereum-onchain.md), [Project 14 — DeFi Activity Stream Processing](projects/14-ethereum-defi.md)
+- **Used in:** [Project 13 — Decoded On-Chain Analytics](../projects/13-ethereum-onchain.md), [Project 14 — DeFi Activity Stream Processing](../projects/14-ethereum-defi.md)
 
 ---
 
@@ -102,7 +102,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** All verified contracts on Ethereum mainnet (~10–20 GB source + metadata).
 - **Format:** JSON (metadata, ABI), Solidity source files
 - **Access:** Free, bulk download via the repository URL tree or IPFS.
-- **Used in:** [Project 13 — Decoded On-Chain Analytics](projects/13-ethereum-onchain.md), [Project 14 — DeFi Activity Stream Processing](projects/14-ethereum-defi.md)
+- **Used in:** [Project 13 — Decoded On-Chain Analytics](../projects/13-ethereum-onchain.md), [Project 14 — DeFi Activity Stream Processing](../projects/14-ethereum-defi.md)
 
 ---
 
@@ -115,7 +115,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 1–3 months of flight state vectors or the flights table (~10–20 GB).
 - **Format:** CSV (bulk), REST API (live)
 - **Access:** Free registration required. Bulk downloads via Zenodo/Impala shell.
-- **Used in:** [Project 15 — Flight Density Analytics with Embedded H3](projects/15-opensky-delays.md), [Project 16 — Flight Diversion & Anomaly Detection](projects/16-opensky-realtime.md)
+- **Used in:** [Project 15 — Flight Density Analytics with Embedded H3](../projects/15-opensky-delays.md), [Project 16 — Flight Diversion & Anomaly Detection](../projects/16-opensky-realtime.md)
 
 ---
 
@@ -128,7 +128,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 1–3 months of all comments (~15–40 GB) or full history of a large subreddit.
 - **Format:** Newline-delimited JSON, zstd-compressed
 - **Access:** Free download via Academic Torrents or mirror sites.
-- **Used in:** [Project 17 — Toxicity Scoring with Embedded ONNX](projects/17-reddit-analytics.md), [Project 18 — Narrative Cross-Pollination Tracker](projects/18-reddit-virality.md)
+- **Used in:** [Project 17 — Toxicity Scoring with Embedded ONNX](../projects/17-reddit-analytics.md), [Project 18 — Narrative Cross-Pollination Tracker](../projects/18-reddit-virality.md)
 
 ---
 
@@ -140,7 +140,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Full dataset (manageable size).
 - **Format:** JSON (sliced into 1,000-playlist files)
 - **Access:** Free download from AICrowd (account required).
-- **Used in:** [Project 19 — Playlist Similarity Engine](projects/19-spotify-recommendations.md), [Project 20 — Music Taste Analytics](projects/20-spotify-taste.md)
+- **Used in:** [Project 19 — Playlist Similarity Engine](../projects/19-spotify-recommendations.md), [Project 20 — Music Taste Analytics](../projects/20-spotify-taste.md)
 
 ---
 
@@ -153,7 +153,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Changeset metadata dump + 1–3 months of replication diffs (~5–10 GB).
 - **Format:** XML/PBF (planet), XML/ORC (changesets), OsmChange XML (diffs)
 - **Access:** Free download, no authentication.
-- **Used in:** [Project 21 — Collaborative Edit CRDT Analysis](projects/21-osm-crdt.md), [Project 22 — Consistency Validator with Prolog](projects/22-osm-quality.md)
+- **Used in:** [Project 21 — Collaborative Edit CRDT Analysis](../projects/21-osm-crdt.md), [Project 22 — Consistency Validator with Prolog](../projects/22-osm-quality.md)
 
 ---
 
@@ -166,7 +166,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Columnar index for a single crawl (~10–20 GB Parquet) or the URL index filtered to specific domains.
 - **Format:** WARC (pages), Parquet/CSV (index)
 - **Access:** Free download from S3 (requester-pays) or direct HTTP.
-- **Used in:** [Project 23 — Web-Scale Multimodal Search with Lucene](projects/23-commoncrawl-domains.md), [Project 24 — Web Link Graph Incremental Processing](projects/24-commoncrawl-linkgraph.md)
+- **Used in:** [Project 23 — Web-Scale Multimodal Search with Lucene](../projects/23-commoncrawl-domains.md), [Project 24 — Web Link Graph Incremental Processing](../projects/24-commoncrawl-linkgraph.md)
 
 ---
 
@@ -179,7 +179,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended approach:** Record 24–72h of multi-pair trade and depth streams for reproducible processing (~5–15 GB).
 - **Format:** JSON over websocket (live), NDJSON (recorded)
 - **Access:** Public websocket, no API key required for market data streams. `wss://stream.binance.com:9443/ws`
-- **Used in:** [Project 25 — Real-Time Portfolio Tracker](projects/25-crypto-portfolio.md), [Project 26 — Order Book Analytics](projects/26-crypto-orderbook.md)
+- **Used in:** [Project 25 — Real-Time Portfolio Tracker](../projects/25-crypto-portfolio.md), [Project 26 — Order Book Analytics](../projects/26-crypto-orderbook.md)
 
 ---
 
@@ -192,7 +192,7 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** Full trip history + real-time feed for a live component (~10 GB batch + live stream).
 - **Format:** CSV (trips), JSON (live feed via GBFS)
 - **Access:** Free download, no authentication.
-- **Used in:** [Project 27 — Demand Hybrid Pipeline](projects/27-citibike-hybrid.md), [Project 28 — Fleet Rebalancing Stream](projects/28-citibike-rebalancing.md)
+- **Used in:** [Project 27 — Demand Hybrid Pipeline](../projects/27-citibike-hybrid.md), [Project 28 — Fleet Rebalancing Stream](../projects/28-citibike-rebalancing.md)
 
 ---
 
@@ -205,4 +205,4 @@ Public datasets used across the projects. All are freely available and downloada
 - **Recommended subset:** 10–30 years of global data (~3–10 GB).
 - **Format:** CSV (one file per station per year)
 - **Access:** Free download, no authentication.
-- **Used in:** [Project 29 — Climate Anomaly Detection](projects/29-noaa-anomaly.md), [Project 30 — Global Weather Correlation Pipeline](projects/30-noaa-correlation.md)
+- **Used in:** [Project 29 — Climate Anomaly Detection](../projects/29-noaa-anomaly.md), [Project 30 — Global Weather Correlation Pipeline](../projects/30-noaa-correlation.md)

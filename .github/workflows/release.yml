@@ -4,25 +4,37 @@ on:
   push:
     branches: [main]
     tags: ["v*"]
+  pull_request:
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 concurrency:
-  group: pages
+  # One run per branch/PR; a newer push cancels the older run.
+  # Scoped by ref so PR builds never cancel a main deployment.
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # release upload on v* tags
     steps:
       - uses: actions/checkout@v4
 
       - uses: typst-community/setup-typst@v4
 
+      # -k builds everything it can, but still fails the job if any target fails.
       - run: make -k
+
+      - name: Upload build for review
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 7
 
       - name: Upload PDFs as release artifacts
         if: startsWith(github.ref, 'refs/tags/v')
@@ -31,13 +43,18 @@ jobs:
           files: build/*.pdf
 
       - name: Upload Pages artifact
+        if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/
 
   deploy:
     needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
