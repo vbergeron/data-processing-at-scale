@@ -1,7 +1,7 @@
 # Project 15 — Flight Density Analytics with Embedded H3 in Spark
 
 **Extends:** Sessions 2.2 (Spark & query execution internals), 1.4 (data modeling), 2.1 (storage formats)  
-**Dataset:** [OpenSky Network](../DATASETS.md#opensky-network)  
+**Dataset:** [OpenSky Network](../context/DATASETS.md#opensky-network)  
 **Stack:** Scala, Spark, H3 (Uber's hexagonal grid library)
 
 ## What is H3?

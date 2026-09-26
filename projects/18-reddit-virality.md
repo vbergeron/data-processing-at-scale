@@ -1,7 +1,7 @@
 # Project 18 — Reddit Narrative Cross-Pollination Tracker
 
 **Extends:** Sessions 3.1 (Flink), 3.2 (windowed aggregations), 4.1 (probabilistic structures)  
-**Dataset:** [Reddit (Pushshift Archive)](../DATASETS.md#reddit-pushshift-archive)  
+**Dataset:** [Reddit (Pushshift Archive)](../context/DATASETS.md#reddit-pushshift-archive)  
 **Stack:** Kafka, Flink, Python
 
 ## Context

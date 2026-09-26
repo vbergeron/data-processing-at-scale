@@ -1,7 +1,7 @@
 # Project 29 — Extreme Weather Event Attribution
 
 **Extends:** Sessions 3.4 (ClickHouse), 3.2 (windowed aggregations), 4.1 (probabilistic structures)  
-**Dataset:** [NOAA Global Surface Summary](../DATASETS.md#noaa-global-surface-summary-of-the-day)  
+**Dataset:** [NOAA Global Surface Summary](../context/DATASETS.md#noaa-global-surface-summary-of-the-day)  
 **Stack:** ClickHouse, Python
 
 ## Context

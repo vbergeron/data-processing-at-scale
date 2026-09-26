@@ -1,7 +1,7 @@
 # Project 8 — Distributed Faceted Search with Embedded Lucene in Spark
 
 **Extends:** Sessions 2.2 (Spark & query execution internals), 1.4 (data modeling), 2.1 (storage formats)  
-**Dataset:** [Stack Exchange Data Dump](../DATASETS.md#stack-exchange-data-dump)  
+**Dataset:** [Stack Exchange Data Dump](../context/DATASETS.md#stack-exchange-data-dump)  
 **Stack:** Scala, Spark, Apache Lucene (embedded)
 
 ## What is Apache Lucene?

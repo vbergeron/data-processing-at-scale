@@ -1,7 +1,7 @@
 # Project 20 — Spotify Genre Boundary Detection
 
 **Extends:** Sessions 2.2 (Spark & query execution), 1.4 (data modeling), 4.1 (probabilistic structures)  
-**Dataset:** [Spotify Million Playlist](../DATASETS.md#spotify-million-playlist-dataset)  
+**Dataset:** [Spotify Million Playlist](../context/DATASETS.md#spotify-million-playlist-dataset)  
 **Stack:** PySpark, Python
 
 ## Context

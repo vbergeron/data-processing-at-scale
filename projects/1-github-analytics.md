@@ -1,7 +1,7 @@
 # Project 1 — GitHub Star-Farming Ring Detection
 
 **Extends:** Sessions 3.1 (Flink), 3.4 (ClickHouse), 4.1 (probabilistic structures)  
-**Dataset:** [GH Archive](../DATASETS.md#gh-archive)  
+**Dataset:** [GH Archive](../context/DATASETS.md#gh-archive)  
 **Stack:** Kafka, Flink, ClickHouse
 
 ## Context

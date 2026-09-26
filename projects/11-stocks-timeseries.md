@@ -1,7 +1,7 @@
 # Project 11 — Stock Market Time-Series Analytics
 
 **Extends:** Sessions 3.4 (ClickHouse), 4.1 (probabilistic data structures)  
-**Dataset:** [US Stock Market](../DATASETS.md#kaggle-finance--us-stock-market-daily--intraday)  
+**Dataset:** [US Stock Market](../context/DATASETS.md#kaggle-finance--us-stock-market-daily--intraday)  
 **Stack:** ClickHouse, Python
 
 ## Context

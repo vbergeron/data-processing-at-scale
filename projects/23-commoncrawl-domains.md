@@ -1,7 +1,7 @@
 # Project 23 — Web-Scale Search Pipeline with Embedded Lucene in Spark
 
 **Extends:** Sessions 2.2 (Spark & query execution internals), 2.1 (storage formats), 4.1 (probabilistic structures)  
-**Dataset:** [Common Crawl](../DATASETS.md#common-crawl)  
+**Dataset:** [Common Crawl](../context/DATASETS.md#common-crawl)  
 **Stack:** Scala, Spark, Apache Lucene (embedded)
 
 ## What is Apache Lucene?

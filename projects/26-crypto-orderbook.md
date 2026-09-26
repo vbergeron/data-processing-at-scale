@@ -1,7 +1,7 @@
 # Project 26 — Real-Time Order Book Reconstruction & Arbitrage Detection
 
 **Extends:** Sessions 3.1 (Flink), 3.2 (stateful processing, checkpointing), 4.1 (probabilistic structures)  
-**Dataset:** [Binance Public Market Data](../DATASETS.md#binance-public-market-data-live-websocket)  
+**Dataset:** [Binance Public Market Data](../context/DATASETS.md#binance-public-market-data-live-websocket)  
 **Stack:** Kafka, Flink, ClickHouse, Python
 
 ## Context

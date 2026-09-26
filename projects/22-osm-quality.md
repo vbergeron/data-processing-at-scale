@@ -1,7 +1,7 @@
 # Project 22 — OpenStreetMap Consistency Validator with Embedded Prolog in Spark
 
 **Extends:** Sessions 3.3 (CALM, lattices), 2.2 (Spark & query execution internals), 1.4 (data modeling)  
-**Dataset:** [OpenStreetMap Changesets](../DATASETS.md#openstreetmap-changesets)  
+**Dataset:** [OpenStreetMap Changesets](../context/DATASETS.md#openstreetmap-changesets)  
 **Stack:** Scala, Spark, tuProlog or SWI-Prolog (via JPL bridge)
 
 ## What is Prolog?

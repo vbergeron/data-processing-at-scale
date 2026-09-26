@@ -1,7 +1,7 @@
 # Project 5 — Wikipedia Vandalism Detection
 
 **Extends:** Sessions 3.1 (Flink), 3.2 (windowed aggregations, watermarks)  
-**Dataset:** [Wikimedia EventStreams](../DATASETS.md#wikimedia-eventstreams)  
+**Dataset:** [Wikimedia EventStreams](../context/DATASETS.md#wikimedia-eventstreams)  
 **Stack:** Kafka, Flink, Python
 
 ## Context

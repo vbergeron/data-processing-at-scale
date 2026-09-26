@@ -1,7 +1,7 @@
 # Project 24 — Web Link Graph Incremental Processing
 
 **Extends:** Sessions 4.2 (differential dataflow), 3.3 (CALM, lattices)  
-**Dataset:** [Common Crawl](../DATASETS.md#common-crawl)  
+**Dataset:** [Common Crawl](../context/DATASETS.md#common-crawl)  
 **Stack:** Python, DuckDB or PostgreSQL
 
 ## Context

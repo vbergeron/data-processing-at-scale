@@ -1,7 +1,7 @@
 # Project 3 — NYC Urban Pulse: Event Detection from Taxi Flow
 
 **Extends:** Sessions 2.2 (Spark & query execution), 2.1 (file formats), 1.4 (data modeling)  
-**Dataset:** [NYC TLC Trip Record Data](../DATASETS.md#nyc-tlc-trip-record-data)  
+**Dataset:** [NYC TLC Trip Record Data](../context/DATASETS.md#nyc-tlc-trip-record-data)  
 **Stack:** PySpark, Parquet
 
 ## Context

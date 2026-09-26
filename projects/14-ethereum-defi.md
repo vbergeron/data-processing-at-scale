@@ -1,7 +1,7 @@
 # Project 14 — DeFi Activity Stream Processing
 
 **Extends:** Sessions 3.1 (Kafka), 3.2 (windowed aggregations), 4.1 (probabilistic structures)  
-**Dataset:** [Ethereum](../DATASETS.md#ethereum-public-dataset-blockchain-etl) + [Sourcify](../DATASETS.md#sourcify-verified-smart-contracts)  
+**Dataset:** [Ethereum](../context/DATASETS.md#ethereum-public-dataset-blockchain-etl) + [Sourcify](../context/DATASETS.md#sourcify-verified-smart-contracts)  
 **Stack:** Kafka, Flink, Python
 
 ## Context

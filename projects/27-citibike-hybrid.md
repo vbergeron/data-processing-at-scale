@@ -1,7 +1,7 @@
 # Project 27 — Citi Bike Demand Hybrid Pipeline
 
 **Extends:** Sessions 2.2 (Spark), 3.1 (Kafka), 3.4 (ClickHouse)  
-**Dataset:** [Citi Bike System Data](../DATASETS.md#citi-bike-system-data)  
+**Dataset:** [Citi Bike System Data](../context/DATASETS.md#citi-bike-system-data)  
 **Stack:** PySpark (batch), Kafka + ClickHouse (real-time)
 
 ## Context

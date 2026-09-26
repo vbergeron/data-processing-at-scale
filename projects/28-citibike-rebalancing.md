@@ -1,7 +1,7 @@
 # Project 28 — Citi Bike Fleet Rebalancing Stream
 
 **Extends:** Sessions 3.1 (Kafka), 3.2 (windowed aggregations), 3.3 (pipeline theory)  
-**Dataset:** [Citi Bike System Data](../DATASETS.md#citi-bike-system-data)  
+**Dataset:** [Citi Bike System Data](../context/DATASETS.md#citi-bike-system-data)  
 **Stack:** Kafka, Flink, Python
 
 ## Context

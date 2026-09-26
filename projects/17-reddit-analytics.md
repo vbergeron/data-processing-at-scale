@@ -1,7 +1,7 @@
 # Project 17 — Reddit Toxicity Scoring with Embedded ONNX in Spark
 
 **Extends:** Sessions 2.2 (Spark & query execution internals), 1.4 (data modeling), 2.1 (storage formats)  
-**Dataset:** [Reddit (Pushshift Archive)](../DATASETS.md#reddit-pushshift-archive)  
+**Dataset:** [Reddit (Pushshift Archive)](../context/DATASETS.md#reddit-pushshift-archive)  
 **Stack:** Scala, Spark, ONNX Runtime (embedded)
 
 ## What is ONNX Runtime?

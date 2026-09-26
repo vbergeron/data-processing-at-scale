@@ -1,7 +1,7 @@
 # Project 2 — Open Source Bus Factor Analysis
 
 **Extends:** Sessions 2.2 (Spark & query execution), 1.4 (data modeling), 4.2 (incremental computation)  
-**Dataset:** [GH Archive](../DATASETS.md#gh-archive)  
+**Dataset:** [GH Archive](../context/DATASETS.md#gh-archive)  
 **Stack:** PySpark, DuckDB, Parquet
 
 ## Context
