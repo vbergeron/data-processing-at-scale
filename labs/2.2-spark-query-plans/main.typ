@@ -4,7 +4,7 @@
   title: [Lab 2.2 — Spark Internals: Plans, Caching, and RDDs],
   session: [Session 2.2 — Apache Spark & Query Execution Internals],
   format: [Individual hands-on lab],
-  tools: [Scala 2.13, Spark 4.0.2, scala-cli, Java 17+],
+  tools: [Scala 3, Spark 4.0.2, scala-cli, Java 17+],
 )
 
 = Objective
@@ -53,6 +53,9 @@ This prints the Spark version and the row count. If you see ~4–5 million rows,
 you are ready.
 
 = Exercise 1 — Two lines to Parquet
+
+The exercise files ship with their code commented out: uncomment each block as
+you reach the task that uses it.
 
 Open `assets/ex1.scala`. It reads the entire NOAA directory as CSV and writes
 it as Parquet — two lines of transformation code.

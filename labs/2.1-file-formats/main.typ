@@ -68,7 +68,7 @@ Columns used in the exercises: `fare_amount` (float), `payment_type` (integer), 
 
 = Exercise 1 — File sizes and compression ratio
 
-Run `ls -lh data/trips.*` and compare the sizes of the four files.
+Run `ls -lh data/trips*` and compare the sizes of the four files.
 
 == Questions
 

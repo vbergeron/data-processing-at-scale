@@ -64,13 +64,13 @@ Two tables:
 
 = Material
 
-Three text files are provided as a `lab-1.2-single-node-benchmark-assets.tar.gz` archive, downloadable from the course website. Extract it into your working directory. Each file contains one entry per line, sorted alphabetically:
+Three text files are provided as a `lab-1.2-single-node-benchmark-assets.tar.gz` archive, downloadable from the course website. Extract it into your working directory. Each file contains one entry per line:
 
-- `cities.txt` — 150 world cities
-- `first_names.txt` — 98 first names
+- `cities.txt` — 155 world cities
+- `first_names.txt` — 99 first names
 - `last_names.txt` — 97 last names
 
-With 98 × 97 = 9,506 unique full name combinations, you can fill 10,000 customers with minimal collisions. You are free to use your own lists instead.
+With 99 × 97 = 9,603 unique full name combinations, you can fill 10,000 customers with minimal collisions. You are free to use your own lists instead.
 
 = Walkthrough
 

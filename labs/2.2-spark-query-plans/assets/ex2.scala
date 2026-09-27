@@ -1,4 +1,4 @@
-//> using scala 2.13.16
+//> using scala 3.3.6
 //> using dep "org.apache.spark:spark-sql_2.13:4.0.2"
 //> using javaOpt "--add-opens=java.base/java.lang=ALL-UNNAMED"
 //> using javaOpt "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"

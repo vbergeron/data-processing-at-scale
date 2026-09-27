@@ -25,7 +25,8 @@ import scala.util.Random
 
   // --- Phase 1: Load (round-robin) ---
   val loadResults = timed("Load"):
-    val chunks = data.grouped(data.size / cluster.numWorkers).toVector
+    val chunkSize = math.ceil(data.size.toDouble / cluster.numWorkers).toInt
+    val chunks = data.grouped(chunkSize).toVector
     Await.result(
       Future.sequence(
         cluster.workerIds.zip(chunks).map: (id, chunk) =>

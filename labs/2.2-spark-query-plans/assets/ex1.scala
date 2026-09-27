@@ -1,4 +1,4 @@
-//> using scala 2.13.16
+//> using scala 3.3.6
 //> using dep "org.apache.spark:spark-sql_2.13:4.0.2"
 //> using javaOpt "--add-opens=java.base/java.lang=ALL-UNNAMED"
 //> using javaOpt "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
@@ -74,9 +74,15 @@ import org.apache.spark.sql.functions._
   // println("\nSpark UI: http://localhost:4040  — press Enter to stop the application.")
   // scala.io.StdIn.readLine()
   //
-  // // Uncomment to force sort-merge join and compare:
+  // // Uncomment to force sort-merge join and compare.
+  // // `joined` was already planned by show() above, so rebuild the join
+  // // after changing the setting — otherwise explain() prints the old plan.
   // // spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "-1")
+  // // val joinedSmj = annualMeans
+  // //   .join(stations, "STATION")
+  // //   .select("STATION", "NAME", "LATITUDE", "LONGITUDE", "avg_temp_f", "n_days")
+  // //   .orderBy(col("avg_temp_f").desc)
   // // println("\n=== Plan: sort-merge join forced ===")
-  // // joined.explain("formatted")
+  // // joinedSmj.explain("formatted")
 
   spark.stop()

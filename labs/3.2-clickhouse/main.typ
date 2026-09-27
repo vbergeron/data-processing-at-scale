@@ -37,7 +37,7 @@ Download one month of NYC Taxi trip data in Parquet format:
 wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet
 ```
 
-The file is ~60 MB compressed, ~2.9 million rows. It is enough to make storage structure observable without long load times.
+The file is ~50 MB compressed, ~2.9 million rows. It is enough to make storage structure observable without long load times.
 
 = Walkthrough
 
@@ -90,7 +90,7 @@ CREATE TABLE trips (
     fare         Float32,
     tip          Float32,
     total        Float32,
-    payment_type Enum8('card'=1, 'cash'=2, 'no_charge'=3, 'dispute'=4, 'unknown'=5)
+    payment_type Enum8('flex_fare'=0, 'card'=1, 'cash'=2, 'no_charge'=3, 'dispute'=4, 'unknown'=5, 'voided'=6)
 ) ENGINE = MergeTree
 ORDER BY (pickup_at, vendor_id);
 
@@ -98,13 +98,13 @@ INSERT INTO trips
 SELECT
     tpep_pickup_datetime,
     tpep_dropoff_datetime,
-    vendor_id,
+    VendorID,
     passenger_count,
     trip_distance,
     fare_amount,
     tip_amount,
     total_amount,
-    payment_type_id
+    payment_type
 FROM file('yellow_tripdata_2024-01.parquet')
 WHERE fare_amount > 0 AND trip_distance > 0;
 ```
@@ -115,10 +115,10 @@ While the insert runs, switch to your second terminal:
 ls ./ch-lab/data/default/trips/
 ```
 
-You will see one or more part directories appear, named like `20240101_1_1_0`. After the insert completes:
+You will see one or more part directories appear, named like `all_1_1_0` (`all` is the partition: the table has no `PARTITION BY`). After the insert completes:
 
 ```
-ls ./ch-lab/data/default/trips/20240101_1_1_0/
+ls ./ch-lab/data/default/trips/all_1_1_0/
 ```
 
 *Observe and identify each file:*
@@ -127,18 +127,18 @@ ls ./ch-lab/data/default/trips/20240101_1_1_0/
   columns: (auto, 1fr),
   [*File*], [*Contents*],
   [`pickup_at.bin`], [Compressed column data for `pickup_at` — this is the only file a date-range query reads],
-  [`pickup_at.mrk3`], [Mark file: maps each granule index entry to a byte offset in `pickup_at.bin`],
-  [`primary.idx`], [Sparse primary index: one entry per ~8 192 rows, always kept in RAM],
+  [`pickup_at.cmrk2`], [Mark file: maps each granule index entry to a byte offset in `pickup_at.bin` (compressed; older versions write an uncompressed `.mrk2`)],
+  [`primary.cidx`], [Sparse primary index: one entry per ~8 192 rows, always kept in RAM (compressed; older versions write `primary.idx`)],
   [`count.txt`], [Total row count of this part],
   [`columns.txt`], [Column names and types stored in this part],
   [`checksums.txt`], [Per-file checksums for integrity verification],
 )
 
-Compare the size of `primary.idx` against `pickup_at.bin`:
+Compare the size of the primary index against `pickup_at.bin`:
 
 ```
-ls -lh ./ch-lab/data/default/trips/20240101_1_1_0/primary.idx
-ls -lh ./ch-lab/data/default/trips/20240101_1_1_0/pickup_at.bin
+ls -lh ./ch-lab/data/default/trips/all_1_1_0/primary.*
+ls -lh ./ch-lab/data/default/trips/all_1_1_0/pickup_at.bin
 ```
 
 *Question:* the index is kilobytes; the data file is megabytes. Why is this called a "sparse" index? What does ClickHouse sacrifice to keep it this small?
@@ -154,7 +154,7 @@ OPTIMIZE TABLE trips FINAL;
 Watch the parts directory in your second terminal — subdirectories consolidate into one. Then confirm via:
 
 ```sql
-SELECT name, rows, parts, bytes_on_disk
+SELECT name, total_rows, active_parts, total_bytes
 FROM system.tables
 WHERE name = 'trips';
 ```
@@ -180,7 +180,7 @@ Compare your prediction against the result.
 
 *Guidance for interpretation:*
 
-- `pickup_at` — timestamps stored in sort order are nearly monotone. The Delta codec encodes differences between consecutive values, then ZSTD compresses near-zero deltas extremely well.
+- `pickup_at` — timestamps stored in sort order are nearly monotone, but the default codec (LZ4) does not exploit that: expect a modest ratio. Declaring `CODEC(Delta, ZSTD)` encodes differences between consecutive values, which ZSTD then compresses extremely well.
 - `vendor_id` — only 2–3 distinct values in the entire column. A byte that repeats 2.9 million times compresses to almost nothing.
 - `payment_type` — similarly low-cardinality; stored as an `Enum8` (one byte), high ratio expected.
 - `distance`, `fare`, `tip` — continuous floats. Adjacent values have no predictable relationship. LZ4 compresses them modestly but not dramatically.
@@ -215,7 +215,7 @@ CREATE TABLE trips_vendor_first (
     fare         Float32,
     tip          Float32,
     total        Float32,
-    payment_type Enum8('card'=1, 'cash'=2, 'no_charge'=3, 'dispute'=4, 'unknown'=5)
+    payment_type Enum8('flex_fare'=0, 'card'=1, 'cash'=2, 'no_charge'=3, 'dispute'=4, 'unknown'=5, 'voided'=6)
 ) ENGINE = MergeTree
 ORDER BY (vendor_id, pickup_at);
 
@@ -281,7 +281,8 @@ SELECT
     countState()             AS trips,
     sumState(fare)           AS revenue,
     avgState(tip)            AS avg_tip
-FROM trips;
+FROM trips
+GROUP BY hour;
 ```
 
 The materialized view fires on every `INSERT INTO trips` — it sees only the new batch, not the full table. The `*State` functions store intermediate binary state that the `*Merge` functions combine at query time.
@@ -379,10 +380,10 @@ Consider the following four designs and their consequences:
 
 *Design A — keep `ORDER BY (pickup_at, vendor_id)`*
 
-Q1 benefits maximally from granule skipping. Q3 can skip on `vendor_id` only after the date prefix is resolved — partial help. Q2 gets no help from the primary index: `payment_type` is not in `ORDER BY`. To help Q2, add a `set(4)` skip index on `payment_type` (only 4 distinct values — a set index is exact, no false positives).
+Q1 benefits maximally from granule skipping. Q3 can skip on `vendor_id` only after the date prefix is resolved — partial help. Q2 gets no help from the primary index: `payment_type` is not in `ORDER BY`. To help Q2, add a `set(8)` skip index on `payment_type` (at most 7 distinct values — a set index is exact, no false positives).
 
 ```sql
-ALTER TABLE trips ADD INDEX idx_payment payment_type TYPE set(4) GRANULARITY 1;
+ALTER TABLE trips ADD INDEX idx_payment payment_type TYPE set(8) GRANULARITY 1;
 ALTER TABLE trips MATERIALIZE INDEX idx_payment;
 ```
 
@@ -427,7 +428,7 @@ LIMIT 12;
 
 - `file()` makes ClickHouse a universal Parquet reader — no ingestion required for exploration
 - Parts are directories of per-column files; `primary.idx` is kilobytes even for millions of rows because it stores one entry per granule, not one per row
-- Compression ratio varies sharply by column: monotone sequences (timestamps, enums) compress 10–30×; continuous floats compress 2–4×
+- Compression ratio varies sharply by column and codec: sorted timestamps only compress well once a `Delta` codec exposes their regularity; continuous floats compress modestly whatever the codec
 - `ORDER BY` is the primary index — the single most impactful schema decision, not a cosmetic sort
 - `AggregatingMergeTree` + `*State`/`*Merge` is the correct pattern for materialized views: intermediate state is combinable across partial batches; plain `AVG` is not
 - No `ORDER BY` satisfies every query equally; the engineering answer is to choose the dominant workload and use projections or skip indexes to cover the others

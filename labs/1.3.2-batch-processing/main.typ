@@ -82,9 +82,13 @@ The provided code loads data round-robin: chunk the dataset into equal parts, se
 
 == 2.2 — Range partitioning (by region)
 
-Change the loading phase: instead of round-robin, send each record to the worker that matches its `region` field. Spawn four workers named `eu`, `us`, `asia`, `africa`.
+Change the loading phase: instead of round-robin, send each record to the worker that owns its `region` field. Keep four workers and give each one a region — the cluster names its workers `w0`…`w3`, so map them explicitly:
 
-_Hint:_ use `cluster.ask[LoadResult](region, ref => WorkerCommand.LoadData(...))` to route records by their region.
+```scala
+val regionWorker = Map("eu" -> "w0", "us" -> "w1", "asia" -> "w2", "africa" -> "w3")
+```
+
+_Hint:_ group the records by region, then use `cluster.ask[LoadResult](regionWorker(region), ref => WorkerCommand.LoadData(records, ref))` to route each group.
 
 Run the pipeline. Observe that the shuffle phase now moves *zero* records for a region-based map — each key is already on the right worker.
 
@@ -157,11 +161,11 @@ Download one hour of GitHub events from #link("https://www.gharchive.org/")[ghar
 
 == Option B — NYC Taxi Trips
 
-Download one month of Yellow Taxi trips from #link("https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page")[NYC TLC] (CSV, \~100 MB per month).
+Download one month of Yellow Taxi trips from #link("https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page")[NYC TLC] (Parquet only since 2022, \~50 MB per month — convert it to CSV first, e.g.\ with DuckDB `COPY (SELECT * FROM 'file.parquet') TO 'trips.csv'`).
 
-- *Range partition* by pickup borough (Manhattan has \~70% of all trips — natural skew).
+- *Range partition* by pickup borough — join `PULocationID` with the TLC taxi zone lookup table from the same page (Manhattan has \~70% of all trips — natural skew).
 - *Map:* extract `(pickup_zone, fare_amount)`. *Reduce:* compute average fare per zone.
-- Compare with hash partition by trip id.
+- Compare with hash partition on the whole line — the dataset has no trip id.
 
 == Option C — Citi Bike
 

@@ -31,8 +31,8 @@ Two generators produce JSONL files at 1–4 second intervals. About 20 % of reco
 Run each in a separate terminal before launching the pipeline:
 
 ```
-scala-cli generate-trades.scala
-scala-cli generate-prices.scala
+scala-cli run . --main-class generateTrades
+scala-cli run . --main-class generatePrices
 ```
 
 *`generate-trades.scala`* → `data/trades/`
@@ -49,13 +49,13 @@ scala-cli generate-prices.scala
 
 == Lab file
 
-The complete pipeline is in `lab.scala`. Run it with:
+`lab.scala` wires the complete pipeline; the function bodies you implement in the steps below are left as `???`. Run it with:
 
 ```
 scala-cli run . --main-class lab
 ```
 
-The `project.scala` file in the same directory declares all Flink 2.2 dependencies — no `build.sbt` or Maven needed. Work through the steps below by reading, running, and modifying `lab.scala`.
+The `project.scala` file in the same directory declares all Flink 2.2 dependencies — no `build.sbt` or Maven needed. Work through the steps below by filling in, running, and modifying `lab.scala`.
 
 = Walkthrough
 
