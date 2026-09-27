@@ -1,4 +1,4 @@
-//> using scala 2.13.16
+//> using scala 3.3.6
 //> using dep "org.apache.spark:spark-sql_2.13:4.0.2"
 //> using javaOpt "--add-opens=java.base/java.lang=ALL-UNNAMED"
 //> using javaOpt "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
@@ -93,9 +93,9 @@ def nearest(v: StationFeatures, centroids: Array[StationFeatures]): StationFeatu
 //   2. Repeat `iterations` times:
 //      a. Broadcast the current centroids to all executors.
 //      b. Map each point to (clusterIndex, (point, 1L))  using `nearest`.
-//      c. Sum partial results with reduceByKey, using `addFeatures` for the
-//         feature accumulator and (+) for the count.
-//      d. Divide the sum by the count with `scaleFeatures` to get new centroids.
+//      c. Sum partial results with reduceByKey, using `StationFeatures.+` for
+//         the feature accumulator and (+) for the count.
+//      d. Divide the sum by the count with `StationFeatures./` to get new centroids.
 //      e. Collect, destroy the broadcast, and loop.
 //
 //   3. Return the final centroids.

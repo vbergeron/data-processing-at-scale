@@ -28,10 +28,10 @@ object MyNode:
 
   val cluster = Cluster("lab-cluster")
 
-  // Spawn three nodes
-  val alice = cluster.spawn("alice")
-  val bob   = cluster.spawn("bob")
-  val carol = cluster.spawn("carol")
+  // Spawn three nodes running your MyNode behavior
+  val alice = cluster.spawn("alice", MyNode.init)
+  val bob   = cluster.spawn("bob",   MyNode.init)
+  val carol = cluster.spawn("carol", MyNode.init)
 
   // Write data to different nodes
   println("--- Writing data ---")
